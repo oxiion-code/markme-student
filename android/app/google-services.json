@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "1095035286846",
+    "project_id": "markme-88aa8",
+    "storage_bucket": "markme-88aa8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1095035286846:android:12d9dffa86c4f75383286f",
+        "android_client_info": {
+          "package_name": "com.example.markme_teacher"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTdwkEeVjIUANb7vngTy2Mxckf-mYHuKs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1095035286846:android:aaf1ab2b31d459cc83286f",
+        "android_client_info": {
+          "package_name": "com.markme.student.markme_admin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTdwkEeVjIUANb7vngTy2Mxckf-mYHuKs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1095035286846:android:d4e62ddd6ba2becb83286f",
+        "android_client_info": {
+          "package_name": "com.oxiionglobal.markme.student"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTdwkEeVjIUANb7vngTy2Mxckf-mYHuKs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
