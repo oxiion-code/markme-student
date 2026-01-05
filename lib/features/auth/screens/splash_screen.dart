@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:markme_student/core/di/college_hive_service.dart';
 
 import '../../../core/utils/app_utils.dart';
 import '../../../core/widgets/primary_button.dart';
@@ -40,7 +41,7 @@ class SplashScreen extends StatelessWidget {
 
             if (state is UnAuthenticated) {
               // Not logged in → go to phone auth
-              context.goNamed('auth_phone');
+              context.go( "/selectCollege");
             } else if (state is UserAlreadyLoggedIn) {
               context.read<StudentCubit>().setStudent(state.student!);
               context.go('/home', extra: state.student);
@@ -92,7 +93,12 @@ class SplashScreen extends StatelessWidget {
                   PrimaryButton(
                     text: "Continue →",
                     onPressed: () {
-                      context.read<AuthBloc>().add(CheckAuthStatus());
+                      final college=CollegeHiveService.getCollege();
+                      if(college==null){
+                        context.go( "/selectCollege");
+                      }else{
+                        context.read<AuthBloc>().add(CheckAuthStatus(collegeId: college.id));
+                      }
                     },
                   ),
                   const SizedBox(height: 24),

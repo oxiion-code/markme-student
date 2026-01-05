@@ -3,6 +3,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:markme_student/core/models/college_detail.dart';
+import 'package:markme_student/features/auth/models/auth_info.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_utils.dart';
@@ -13,7 +15,8 @@ import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 
 class AuthPhoneNumberScreen extends StatefulWidget {
-  const AuthPhoneNumberScreen({super.key});
+  final CollegeDetail collegeDetail;
+  const AuthPhoneNumberScreen({super.key,required this.collegeDetail});
 
   @override
   State<AuthPhoneNumberScreen> createState() => _AuthPhoneNumberScreenState();
@@ -39,10 +42,9 @@ class _AuthPhoneNumberScreenState extends State<AuthPhoneNumberScreen> {
           }
           if (state is OtpSent) {
             context.pop();
-            context.push('/authOtp', extra: {
-              'verificationId': state.verificationId,
-              'phoneNumber':phoneController.text,
-            });
+            final phoneNumber=phoneController.text.trim();
+            final authInfo=AuthInfo(uid: state.verificationId, phoneNumber:phoneNumber, isNewUser: false,collegeDetail: widget.collegeDetail);
+            context.push('/authOtp', extra: authInfo);
           } else if (state is AuthError) {
             context.pop();
             AppUtils.showCustomSnackBar(context,state.error,isError: true);

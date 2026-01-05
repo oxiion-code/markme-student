@@ -4,5 +4,5 @@ import 'package:markme_student/features/class/models/class_session_with_flag.dar
 
 abstract class ClassRepository {
   Stream<Either<AppFailure, List<ClassSessionWithFlag>>> streamTodayClasses(
-      String sectionId, String studentId);
+      String sectionId, String studentId,String collegeId);
 }

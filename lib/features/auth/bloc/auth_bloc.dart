@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
-import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import '../../../core/error/failure.dart';
 import '../../../core/utils/app_utils.dart';
 import '../models/auth_info.dart';
 import '../../student/models/student.dart';
@@ -21,6 +18,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<CheckAuthStatus>(_checkAuthStatus);
     on<UpdateDataEvent>(_updateData);
     on<LogoutRequested>(_onLogoutRequest);
+    on<LoadAllCollegesEvent>(_onLoadAllColleges);
   }
 
   Future<void> _onSendOtp(SendOtpEvent event, Emitter<AuthState> emit) async {
@@ -51,7 +49,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
       (authInfo) async {
         final uid = authInfo.uid;
-        final userDataResult = await authRepository.getUserdata(uid: uid);
+        final userDataResult = await authRepository.getUserdata(uid: uid,collegeId: event.collegeId);
         Student student;
 
         if (userDataResult.isLeft()) {
@@ -87,7 +85,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
               pin: '',
             ),
           );
-          await authRepository.updateStudentData(student: student);
+          await authRepository.updateStudentData(student: student,collegeId: event.collegeId);
         } else {
           student = userDataResult.getOrElse(() => throw Exception());
         }
@@ -122,7 +120,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       return;
     }
 
-    final result = await authRepository.getUserdata(uid: currentUser.uid);
+    final result = await authRepository.getUserdata(uid: currentUser.uid,collegeId: event.collegeId);
     result.fold((failure) => emit(AuthError(failure.message)), (student) {
       final isProfileComplete =
           student.name.isNotEmpty && student.profilePhotoUrl.isNotEmpty;
@@ -160,11 +158,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await authRepository.updateStudentData(
       student: updatedStudent,
       profilePhoto: event.file,
+      collegeId: event.collegeId
     );
-
     result.fold(
       (failure) => emit(AuthError(failure.message)),
       (student) => emit(StudentUpdateSuccess(student)),
+    );
+  }
+
+  FutureOr<void> _onLoadAllColleges(
+      LoadAllCollegesEvent event,
+      Emitter<AuthState> emit,
+      ) async {
+    emit(SelectCollegeLoading());
+    final result = await authRepository.loadAllColleges();
+    result.fold(
+          (failure) => emit(AuthError(failure.message)),
+          (colleges) => emit(LoadedAllCollegeDetails(colleges: colleges)),
     );
   }
 }

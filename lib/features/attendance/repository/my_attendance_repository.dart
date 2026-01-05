@@ -6,5 +6,6 @@ abstract class MyAttendanceRepository {
   Future<Either<AppFailure, List<SubjectAttendance>>> getSubjectWiseAttendance(
     String studentId,
     String sectionId,
+      String collegeId
   );
 }

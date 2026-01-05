@@ -20,7 +20,7 @@ class ClassBloc extends Bloc<ClassEvent, ClassState> {
     emit(ClassLoading());
 
     await emit.forEach<Either<AppFailure, List<ClassSessionWithFlag>>>(
-      classRepository.streamTodayClasses(event.sectionId, event.studentId),
+      classRepository.streamTodayClasses(event.sectionId, event.studentId,event.collegeId),
       onData: (result) {
         return result.fold(
               (failure) => ClassError(message: failure.message),

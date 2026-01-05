@@ -2,13 +2,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 class Step1Profile extends StatelessWidget {
-  final TextEditingController nameController;
   final File? profileImage;
   final VoidCallback onPickImage;
+  final TextEditingController firstNameController;
+  final TextEditingController middleNameController;
+  final TextEditingController lastNameController;
 
   const Step1Profile({
     super.key,
-    required this.nameController,
+    required this.firstNameController,
+    required this.middleNameController,
+    required this.lastNameController,
     required this.profileImage,
     required this.onPickImage,
   });
@@ -22,7 +26,11 @@ class Step1Profile extends StatelessWidget {
         children: [
           _buildAvatarPicker(),
           const SizedBox(height: 48),
-          _buildNameInputField(),
+          _buildNameInputField(controller:firstNameController ,label: "first name"),
+          const SizedBox(height: 8,),
+          _buildNameInputField(controller: middleNameController, label: "middle name"),
+          const SizedBox(height: 8,),
+          _buildNameInputField(controller: lastNameController, label: "last name"),
           SizedBox(height: 100),
         ],
       ),
@@ -98,23 +106,26 @@ class Step1Profile extends StatelessWidget {
     );
   }
 
-  Widget _buildNameInputField() {
+  Widget _buildNameInputField({required TextEditingController controller,required String label}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: TextFormField(
         validator: (value) {
+          if(label=="middle name"){
+            return null;
+          }
           if (value == null || value.trim().isEmpty) {
-            return 'Name is required';
+            return '$label is required';
           }
           if (value.trim().length < 3) {
-            return 'Name must be at least 3 characters';
+            return '$label must be at least 3 characters';
           }
           return null; // valid
         },
-        controller: nameController,
+        controller: controller,
         decoration: InputDecoration(
-          labelText: "Your Name",
-          hintText: "Enter your full name",
+          labelText: "Your $label",
+          hintText: "Enter your ${label.toLowerCase()}",
           labelStyle: TextStyle(color: Colors.grey.shade600),
           filled: true,
           fillColor: Colors.grey.shade100,

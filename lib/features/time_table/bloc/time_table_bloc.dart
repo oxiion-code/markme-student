@@ -26,7 +26,7 @@ class TimeTableBloc extends Bloc<TimeTableEvent, TimeTableState> {
       ) async {
     emit(TimeTableLoading());
 
-    final result = await timeTableRepository.fetchTimeTableForStudent(event.sectionId);
+    final result = await timeTableRepository.fetchTimeTableForStudent(event.sectionId ,event.collegeId);
 
     result.fold(
           (failure) => emit(TimeTableError(message: failure.message)),

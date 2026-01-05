@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:markme_student/core/di/college_hive_service.dart';
 import 'package:markme_student/core/models/academic_batch.dart';
 import 'package:markme_student/core/models/branch.dart';
 import 'package:markme_student/core/models/course.dart';
@@ -36,12 +37,13 @@ class _Step2BasicInfoState extends State<Step2BasicInfo> {
   List<String> sections = [];
   final groups = ["GROUP 1", "GROUP 2"];
   int count=0;
+  final String collegeId=CollegeHiveService.getCollege()!.id;
 
   @override
   void initState() {
     super.initState();
     if(count==0){
-      context.read<StudentBloc>().add(GetAllCoursesEvent());
+      context.read<StudentBloc>().add(GetAllCoursesEvent(collegeId: collegeId));
       count+=1;
     }
     // Load courses initially
@@ -110,7 +112,7 @@ class _Step2BasicInfoState extends State<Step2BasicInfo> {
                     sections = [];
                   });
                   // Fetch branches
-                  context.read<StudentBloc>().add(GetBranchesByCourseIdEvent(course.courseId));
+                  context.read<StudentBloc>().add(GetBranchesByCourseIdEvent(course.courseId,collegeId: collegeId));
                 },
               ),
               if(branches.isNotEmpty)
@@ -129,7 +131,7 @@ class _Step2BasicInfoState extends State<Step2BasicInfo> {
                     batches = [];
                     sections = [];
                   });
-                  context.read<StudentBloc>().add(GetBatchesByBranchIdEvent(branch.branchId));
+                  context.read<StudentBloc>().add(GetBatchesByBranchIdEvent(branch.branchId,collegeId: collegeId));
                 },
               ),
               if(batches.isNotEmpty)
@@ -148,7 +150,7 @@ class _Step2BasicInfoState extends State<Step2BasicInfo> {
                   });
                   context
                       .read<StudentBloc>()
-                      .add(GetSectionsByBatchIdEvent( batchId:batch.batchId));
+                      .add(GetSectionsByBatchIdEvent( batchId:batch.batchId,collegeId: collegeId));
                 },
               ),
               if(sections.isNotEmpty)
@@ -163,6 +165,7 @@ class _Step2BasicInfoState extends State<Step2BasicInfo> {
                   widget.sectionController.text = section;
                 },
               ),
+              if(widget.sectionController.text.isNotEmpty)
               _dropdownCard<String>(
                 context,
                 "Group",

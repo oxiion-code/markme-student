@@ -9,7 +9,8 @@ class ClassEvent extends Equatable{
 class LoadTodayClassesEvent extends ClassEvent{
   final String sectionId;
   final String studentId;
-  const LoadTodayClassesEvent({required this.sectionId, required this.studentId});
+  final String collegeId;
+  const LoadTodayClassesEvent({required this.sectionId, required this.studentId, required this.collegeId});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [sectionId,studentId,collegeId];
 }

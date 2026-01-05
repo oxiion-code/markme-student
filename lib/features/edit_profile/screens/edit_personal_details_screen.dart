@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:markme_student/core/di/college_hive_service.dart';
 import 'package:markme_student/core/utils/app_utils.dart';
 
 import 'package:markme_student/features/student/models/student.dart';
@@ -24,6 +25,7 @@ class EditPersonalDetailsScreen extends StatefulWidget {
 
 class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
   final _formKey = GlobalKey<FormState>();
+  final String collegeId=CollegeHiveService.getCollege()!.id;
 
   late TextEditingController _nameController;
   late TextEditingController _emailController;
@@ -93,6 +95,7 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
         UpdateProfileOfStudentEvent(
           student: updatedStudent,
           profilePhoto: _selectedImage,
+          collegeId: collegeId
         ),
       );
     }

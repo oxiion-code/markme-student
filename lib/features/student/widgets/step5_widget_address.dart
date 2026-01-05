@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-class Step5Address extends StatelessWidget {
+import '../../../core/utils/constants.dart';
+
+class Step5Address extends StatefulWidget {
   final TextEditingController addressLine1Controller;
   final TextEditingController addressLine2Controller;
   final TextEditingController distController;
@@ -16,6 +18,11 @@ class Step5Address extends StatelessWidget {
     required this.pincodeController,
   });
 
+  @override
+  State<Step5Address> createState() => _Step5AddressState();
+}
+
+class _Step5AddressState extends State<Step5Address> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -37,7 +44,7 @@ class Step5Address extends StatelessWidget {
 
             _inputField(
               label: "Village/Po",
-              controller: addressLine1Controller,
+              controller: widget.addressLine1Controller,
               icon: Icons.home,
             ),
 
@@ -45,7 +52,7 @@ class Step5Address extends StatelessWidget {
 
             _inputField(
               label: "City",
-              controller: addressLine2Controller,
+              controller: widget.addressLine2Controller,
               icon: Icons.home_work,
             ),
 
@@ -53,27 +60,40 @@ class Step5Address extends StatelessWidget {
 
             _inputField(
               label: "District",
-              controller: distController,
+              controller: widget.distController,
               icon: Icons.location_city,
             ),
 
             const SizedBox(height: 18),
 
-            _inputField(
-              label: "State",
-              controller: stateController,
-              icon: Icons.map,
+            DropdownButtonFormField<String>(
+              isExpanded: true,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Please select your state";
+                }
+                return null;
+              },
+              items: Constants.indianStatesAndUTs.map((state) {
+                return DropdownMenuItem(value: state, child: Text(state));
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  widget.stateController.text = value!;
+                });
+              },
+              decoration: const InputDecoration(labelText: "Select State / UT"),
             ),
 
             const SizedBox(height: 18),
 
             _inputField(
               label: "Pincode",
-              controller: pincodeController,
+              controller: widget.pincodeController,
               icon: Icons.pin_drop,
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 100,),
+            SizedBox(height: 100),
           ],
         ),
       ),
@@ -104,7 +124,10 @@ class Step5Address extends StatelessWidget {
         prefixIcon: Icon(icon, color: Colors.blueAccent),
         filled: true,
         fillColor: Colors.grey.shade50,
-        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: Colors.grey.shade400),

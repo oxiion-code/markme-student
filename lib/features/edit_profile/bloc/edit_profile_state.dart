@@ -41,3 +41,12 @@ class EditProfileError extends EditProfileState{
   @override
   List<Object?> get props => [message];
 }
+class UpdatedStudentRegOrRoll extends EditProfileState{
+
+}
+class LoadedSectionDetails extends EditProfileState{
+  final Section section;
+  const LoadedSectionDetails({required this.section});
+  @override
+  List<Object?> get props => [section];
+}

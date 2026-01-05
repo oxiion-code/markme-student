@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:go_router/go_router.dart';
+import 'package:markme_student/core/di/college_hive_service.dart';
 import 'package:markme_student/core/theme/app_colors.dart';
 import 'package:markme_student/core/utils/app_utils.dart';
 import 'package:markme_student/features/student/models/student.dart';
@@ -17,6 +18,7 @@ class HomeSideBar extends StatelessWidget {
     final deviceHeight = MediaQuery.of(context).size.height;
     final deviceWidth = MediaQuery.of(context).size.width;
     final sidePadding = deviceWidth * 0.06;
+
 
     return Drawer(
       child: BlocBuilder<StudentCubit, Student?>(
@@ -72,7 +74,7 @@ class HomeSideBar extends StatelessWidget {
                     SizedBox(height: 14),
                     Text(
                       student.name ?? "Student Name",
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
@@ -128,6 +130,24 @@ class HomeSideBar extends StatelessWidget {
                   children: [
                     _drawerTile(
                       context,
+                      leading: Icon(MaterialIcons.security, color: AppColors.primaryLight, size: 27),
+                      title: "Profile Verification",
+                      onTap: () {
+                        Navigator.pop(context);
+                        context.push( "/profile-verification", extra: student);
+                      },
+                    ),
+                    _drawerTile(
+                      context,
+                      leading: Icon(MaterialIcons.device_hub, color: AppColors.primaryLight, size: 27),
+                      title: "Opportunities Hub",
+                      onTap: () {
+                        Navigator.pop(context);
+                        context.push( "/opportunities", extra: student);
+                      },
+                    ),
+                    _drawerTile(
+                      context,
                       leading: Icon(MaterialIcons.person_outline, color: AppColors.primaryLight, size: 27),
                       title: "My Attendance",
                       onTap: () {
@@ -144,6 +164,7 @@ class HomeSideBar extends StatelessWidget {
                         context.push("/timeTable", extra: student);
                       },
                     ),
+
                     _drawerTile(
                       context,
                       leading: Icon(CupertinoIcons.settings, color: AppColors.primaryLight, size: 27),

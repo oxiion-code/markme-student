@@ -20,6 +20,7 @@ class MyAttendanceBloc extends Bloc<MyAttendanceEvent, MyAttendanceState> {
     final result = await attendanceRepository.getSubjectWiseAttendance(
       event.studentId,
       event.sectionId,
+      event.collegeId
     );
     result.fold(
       (failure) => emit(MyAttendanceError(failure.message)),

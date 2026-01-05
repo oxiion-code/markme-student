@@ -11,13 +11,21 @@ class MyAttendanceRepositoryImpl extends MyAttendanceRepository {
 
   @override
   Future<Either<AppFailure, List<SubjectAttendance>>> getSubjectWiseAttendance(
-      String studentId,
-      String sectionId,
-      ) async {
+    String studentId,
+    String sectionId,
+    String collegeId,
+  ) async {
     try {
       // Get section document
-      final sectionDoc = await firestore.collection("sections").doc(sectionId).get();
-      if (!sectionDoc.exists) return Left(AppFailure(message: "Section not found"));
+      final sectionDoc = await firestore
+          .collection("sections")
+          .doc(collegeId)
+          .collection("sections")
+          .doc(sectionId)
+          .get();
+      if (!sectionDoc.exists) {
+        return Left(AppFailure(message: "Section not found"));
+      }
 
       final sectionData = sectionDoc.data();
       if (sectionData == null || sectionData['currentSemesterNumber'] == null) {
@@ -26,24 +34,28 @@ class MyAttendanceRepositoryImpl extends MyAttendanceRepository {
       final int currentSemesterNo = sectionData['currentSemesterNumber'];
 
       // Fetch all attendance docs for the current semester
+
       final attendanceSnapshot = await firestore
+          .collection("attendance")
+          .doc(collegeId)
           .collection("attendance")
           .where("sectionId", isEqualTo: sectionId)
           .where("semesterNo", isEqualTo: currentSemesterNo)
           .get();
 
       // Prepare futures to fetch student records in parallel
-      final List<Future<Map<String, dynamic>>> recordFutures = attendanceSnapshot.docs.map((attendanceDoc) async {
-        final attData = attendanceDoc.data();
-        final recordSnap = await firestore
-            .collection("attendance")
-            .doc(attendanceDoc.id)
-            .collection("records")
-            .where("studentId", isEqualTo: studentId)
-            .get();
+      final List<Future<Map<String, dynamic>>> recordFutures =
+          attendanceSnapshot.docs.map((attendanceDoc) async {
+            final attData = attendanceDoc.data();
+            final recordSnap = await firestore
+                .collection("attendance").doc(collegeId).collection("attendance")
+                .doc(attendanceDoc.id)
+                .collection("records")
+                .where("studentId", isEqualTo: studentId)
+                .get();
 
-        return {'attendanceDoc': attData, 'records': recordSnap};
-      }).toList();
+            return {'attendanceDoc': attData, 'records': recordSnap};
+          }).toList();
 
       final allResults = await Future.wait(recordFutures);
 
@@ -74,10 +86,12 @@ class MyAttendanceRepositoryImpl extends MyAttendanceRepository {
           subjectSessions[subjectId]!.add(session);
         }
       }
-
+      if (subjectIds.isEmpty) {
+        return const Right([]);
+      }
       // Batch fetch subject names and types
       final subjectDocs = await firestore
-          .collection("subjects")
+          .collection("subjects").doc(collegeId).collection("subjects")
           .where(FieldPath.documentId, whereIn: subjectIds.toList())
           .get();
 
@@ -91,10 +105,14 @@ class MyAttendanceRepositoryImpl extends MyAttendanceRepository {
       }
 
       // Build final SubjectAttendance list
-      final List<SubjectAttendance> result = subjectSessions.entries.map((entry) {
+      final List<SubjectAttendance> result = subjectSessions.entries.map((
+        entry,
+      ) {
         final subjectId = entry.key;
         final sessions = entry.value;
-        final presentCount = sessions.where((s) => s.isPresent.toLowerCase() == "present").length;
+        final presentCount = sessions
+            .where((s) => s.isPresent.toLowerCase() == "present")
+            .length;
 
         return SubjectAttendance(
           subjectId: subjectId,

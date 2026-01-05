@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:markme_student/core/di/college_hive_service.dart';
+import 'package:markme_student/core/utils/app_utils.dart';
 
 import '../../edit_profile/bloc/edit_profile_bloc.dart';
 import '../../edit_profile/bloc/edit_profile_event.dart';
@@ -16,6 +18,7 @@ class ChangeSectionScreen extends StatefulWidget {
 
 class _ChangeSectionScreenState extends State<ChangeSectionScreen> {
   String? selectedSection;
+  final String collegeId= CollegeHiveService.getCollege()!.id;
 
   @override
   void initState() {
@@ -23,10 +26,11 @@ class _ChangeSectionScreenState extends State<ChangeSectionScreen> {
     final student = context.read<StudentCubit>().state;
     if (student != null) {
       context.read<EditProfileBloc>().add(
-        LoadSectionsForStudentEvent(batchId: student.batchId),
+        LoadSectionsForStudentEvent(batchId: student.batchId,collegeId: collegeId ),
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -45,22 +49,11 @@ class _ChangeSectionScreenState extends State<ChangeSectionScreen> {
             listener: (context, state) {
               if (state is SectionChangedForStudent) {
                 context.read<StudentCubit>().updateStudent(student.copyWith(sectionId: state.sectionId));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Section updated to ${state.sectionId.split("_").join(" ").toUpperCase()}',
-                    ),
-                    backgroundColor: Colors.green,
-                  ),
-                );
+                AppUtils.showCustomSnackBar(context,  'Section updated to ${state.sectionId.split("_").join(" ").toUpperCase()}');
+
                 Navigator.pop(context); // 👈 go back after success
               } else if (state is EditProfileError) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+                AppUtils.showCustomSnackBar(context, state.message,isError: true);
               }
             },
             child: Padding(
@@ -82,7 +75,7 @@ class _ChangeSectionScreenState extends State<ChangeSectionScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              "Current Section: ${student.sectionId.split("_").join(" ").toUpperCase()}",
+                              "Current Section: ${student.sectionId.split("_").join("-").toUpperCase()}",
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
@@ -174,6 +167,7 @@ class _ChangeSectionScreenState extends State<ChangeSectionScreen> {
                           ChangeSectionOfStudentEvent(
                             studentId: student.id,
                             sectionId: selectedSection!,
+                            collegeId: collegeId
                           ),
                         );
                       },

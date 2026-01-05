@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:markme_student/core/di/college_hive_service.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import '../../student/models/student.dart';
 
@@ -18,14 +19,17 @@ class TimeTableDetailScreen extends StatefulWidget {
 
 class _TimeTableDetailScreenState extends State<TimeTableDetailScreen> {
   final GlobalKey<SfPdfViewerState> pdfViewerKey = GlobalKey();
+  final String collegeId=CollegeHiveService.getCollege()!.id;
 
   @override
   void initState() {
     super.initState();
-    // Trigger the fetch when the screen is initialized
-    context.read<TimeTableBloc>().add(
-      FetchTimeTableForStudentEvent(sectionId: widget.student.sectionId),
-    );
+
+    if(widget.student.sectionId.isNotEmpty){
+      context.read<TimeTableBloc>().add(
+        FetchTimeTableForStudentEvent(sectionId: widget.student.sectionId,collegeId: collegeId),
+      );
+    }
   }
 
   @override
@@ -165,7 +169,41 @@ class _TimeTableDetailScreenState extends State<TimeTableDetailScreen> {
                 style: const TextStyle(color: Colors.red),
               ),
             );
-          }
+          }else if(widget.student.sectionId.isEmpty){
+            final deviceHeight = MediaQuery.of(context).size.height;
+            return SizedBox(
+              height: deviceHeight * 0.5,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.verified_outlined,
+                        size: 80, color: Colors.orange),
+                    const SizedBox(height: 24),
+                    const Text(
+                      "Data Not Verified Yet",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: Text(
+                        "Your data is not verified yet and section is not allotted. Please contact your administrator.",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                          height: 1.4,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );}
           return const SizedBox();
         },
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:markme_student/core/di/college_hive_service.dart';
 import 'package:markme_student/core/utils/app_utils.dart';
 import 'package:markme_student/features/attendance/bloc/my_attendance_bloc.dart';
 import 'package:markme_student/features/attendance/bloc/my_attendance_event.dart';
@@ -17,15 +18,20 @@ class MyAttendanceScreen extends StatefulWidget {
 }
 
 class _MyAttendanceScreenState extends State<MyAttendanceScreen> {
+  final collegeId= CollegeHiveService.getCollege()!.id;
+
   @override
   void initState() {
     super.initState();
-    context.read<MyAttendanceBloc>().add(
-      LoadMyAttendanceEvent(
-        studentId: widget.student.id,
-        sectionId: widget.student.sectionId,
-      ),
-    );
+    if(widget.student.sectionId.isNotEmpty){
+      context.read<MyAttendanceBloc>().add(
+        LoadMyAttendanceEvent(
+            studentId: widget.student.id,
+            sectionId: widget.student.sectionId,
+            collegeId: collegeId
+        ),
+      );
+    }
   }
 
   @override
@@ -227,7 +233,42 @@ class _MyAttendanceScreenState extends State<MyAttendanceScreen> {
               ),
             );
           }
-
+          if(widget.student.sectionId.isEmpty){
+            final deviceHeight = MediaQuery.of(context).size.height;
+            return SizedBox(
+              height: deviceHeight * 0.5,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.verified_outlined,
+                        size: 80, color: Colors.orange),
+                    const SizedBox(height: 24),
+                    const Text(
+                      "Data Not Verified Yet",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: Text(
+                        "Your data is not verified yet and section is not allotted. Please contact your administrator.",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                          height: 1.4,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
           return const Center(child: Text(""));
         },
       ),

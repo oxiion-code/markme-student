@@ -5,6 +5,7 @@ import 'package:markme_student/features/student/models/student.dart';
 import 'package:markme_student/features/edit_profile/bloc/edit_profile_bloc.dart';
 import 'package:markme_student/features/edit_profile/bloc/edit_profile_event.dart';
 import 'package:markme_student/features/edit_profile/bloc/edit_profile_state.dart';
+import '../../../core/di/college_hive_service.dart';
 import '../../student/models/student_cubit.dart';
 
 class EditParentDetailsScreen extends StatefulWidget {
@@ -19,7 +20,7 @@ class EditParentDetailsScreen extends StatefulWidget {
 
 class _EditParentDetailsScreenState extends State<EditParentDetailsScreen> {
   final _formKey = GlobalKey<FormState>();
-
+  final String collegeId= CollegeHiveService.getCollege()!.id;
   late TextEditingController _fatherNameController;
   late TextEditingController _fatherPhoneController;
   late TextEditingController _motherNameController;
@@ -59,7 +60,8 @@ class _EditParentDetailsScreenState extends State<EditParentDetailsScreen> {
       context.read<EditProfileBloc>().add(
         UpdateProfileOfStudentEvent(
           student: updatedStudent,
-          profilePhoto: null, // No photo change here
+          profilePhoto: null,
+          collegeId: collegeId// No photo change here
         ),
       );
     }

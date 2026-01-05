@@ -9,6 +9,14 @@ import 'package:markme_student/features/class/bloc/class_bloc.dart';
 import 'package:markme_student/features/class/repository/class_repository.dart';
 import 'package:markme_student/features/class/repository/class_repository_impl.dart';
 import 'package:markme_student/features/edit_profile/bloc/edit_profile_bloc.dart';
+import 'package:markme_student/features/edit_profile/repositories/edit_profile_repository.dart';
+import 'package:markme_student/features/edit_profile/repositories/edit_profile_repository_impl.dart';
+import 'package:markme_student/features/opportunities/bloc/opportunities_bloc.dart';
+import 'package:markme_student/features/opportunities/repositories/opportunities_repository.dart';
+import 'package:markme_student/features/opportunities/repositories/opportunities_repository_impl.dart';
+import 'package:markme_student/features/profile_verification/bloc/profile_verification_bloc.dart';
+import 'package:markme_student/features/profile_verification/repositories/profile_verification_repository.dart';
+import 'package:markme_student/features/profile_verification/repositories/profile_verification_repository_impl.dart';
 import 'package:markme_student/features/student/bloc/student_bloc.dart';
 import 'package:markme_student/features/student/repositories/student_repository.dart';
 import 'package:markme_student/features/student/repositories/student_repository_impl.dart';
@@ -20,22 +28,55 @@ import '../../features/auth/bloc/auth_bloc.dart';
 import '../../features/auth/repositories/auth_repository.dart';
 import '../../features/auth/repositories/auth_repository_impl.dart';
 
-final sl=GetIt.instance;
- Future<void> init() async{
-   sl.registerLazySingleton<FirebaseAuth>(()=>FirebaseAuth.instance);
-   sl.registerLazySingleton<FirebaseFirestore>(()=>FirebaseFirestore.instance);
-   sl.registerLazySingleton<FirebaseStorage>(()=>FirebaseStorage.instance);
+final sl = GetIt.instance;
+Future<void> init() async {
+  sl.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
+  sl.registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance);
+  sl.registerLazySingleton<FirebaseStorage>(() => FirebaseStorage.instance);
 
-   sl.registerLazySingleton<AuthRepository>(()=>AuthRepositoryImpl(sl(),sl(),sl()));
-   sl.registerLazySingleton<StudentRepository>(()=>StudentRepositoryImpl(sl()));
-   sl.registerLazySingleton<ClassRepository>(()=>ClassRepositoryImpl(sl()));
-   sl.registerLazySingleton<MyAttendanceRepository>(()=>MyAttendanceRepositoryImpl(firestore: sl()));
-   sl.registerLazySingleton<TimeTableRepository>(()=>TimeTableRepositoryImpl(firestore: sl(), storage: sl()));
+  sl.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(sl(), sl(), sl()),
+  );
+  sl.registerLazySingleton<StudentRepository>(
+    () => StudentRepositoryImpl(sl()),
+  );
+  sl.registerLazySingleton<ClassRepository>(() => ClassRepositoryImpl(sl()));
+  sl.registerLazySingleton<MyAttendanceRepository>(
+    () => MyAttendanceRepositoryImpl(firestore: sl()),
+  );
+  sl.registerLazySingleton<TimeTableRepository>(
+    () => TimeTableRepositoryImpl(firestore: sl(), storage: sl()),
+  );
+  sl.registerLazySingleton<ProfileVerificationRepository>(
+    () => ProfileVerificationRepositoryImpl(firestore: sl(), storage: sl()),
+  );
+  sl.registerLazySingleton<EditProfileRepository>(
+    () => EditProfileRepositoryImpl(firestore: sl()),
+  );
+  sl.registerLazySingleton<OpportunitiesRepository>(
+    () => OpportunitiesRepositoryImpl(firestore: sl()),
+  );
 
-   sl.registerFactory<AuthBloc>(()=>AuthBloc(sl()));
-   sl.registerFactory<StudentBloc>(()=>StudentBloc(sl(),sl()));
-   sl.registerFactory<ClassBloc>(()=>ClassBloc(classRepository: sl()));
-   sl.registerFactory<MyAttendanceBloc>(()=>MyAttendanceBloc(attendanceRepository: sl()));
-   sl.registerFactory<TimeTableBloc>(()=>TimeTableBloc(timeTableRepository: sl()));
-   sl.registerFactory<EditProfileBloc>(()=>EditProfileBloc(authRepository: sl(),studentRepository: sl()));
- }
+  sl.registerFactory<AuthBloc>(() => AuthBloc(sl()));
+  sl.registerFactory<StudentBloc>(() => StudentBloc(sl(), sl()));
+  sl.registerFactory<ClassBloc>(() => ClassBloc(classRepository: sl()));
+  sl.registerFactory<MyAttendanceBloc>(
+    () => MyAttendanceBloc(attendanceRepository: sl()),
+  );
+  sl.registerFactory<TimeTableBloc>(
+    () => TimeTableBloc(timeTableRepository: sl()),
+  );
+  sl.registerFactory<EditProfileBloc>(
+    () => EditProfileBloc(
+      authRepository: sl(),
+      studentRepository: sl(),
+      editProfileRepository: sl(),
+    ),
+  );
+  sl.registerFactory<ProfileVerificationBloc>(
+    () => ProfileVerificationBloc(repository: sl()),
+  );
+  sl.registerFactory<OpportunitiesBloc>(
+    () => OpportunitiesBloc(repository: sl()),
+  );
+}

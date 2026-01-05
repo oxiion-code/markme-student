@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
+import 'package:markme_student/core/di/college_hive_service.dart';
+import 'package:markme_student/core/models/college_detail.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_utils.dart';
@@ -16,11 +18,13 @@ import '../bloc/auth_state.dart';
 class AuthOtpScreen extends StatefulWidget {
   final String verificationId;
   final String phoneNumber;
+  final CollegeDetail collegeDetail;
 
   const AuthOtpScreen({
     super.key,
     required this.verificationId,
     required this.phoneNumber,
+    required this.collegeDetail
   });
 
   @override
@@ -94,8 +98,10 @@ class _AuthOtpScreenState extends State<AuthOtpScreen> {
           // Auth success
           if (state is AuthenticationSuccess) {
             if (state.isNewUser || state.student == null) {
+              CollegeHiveService.saveCollege(widget.collegeDetail);
               context.go('/studentRegistration', extra: state.student);
             } else {
+              CollegeHiveService.saveCollege(widget.collegeDetail);
               context.read<StudentCubit>().setStudent(state.student!);
               context.go('/home', extra: state.student);
             }
@@ -103,9 +109,9 @@ class _AuthOtpScreenState extends State<AuthOtpScreen> {
 
           // Profile incomplete
           else if (state is ProfileIncomplete) {
+            CollegeHiveService.saveCollege(widget.collegeDetail);
             context.go('/studentRegistration', extra: state.student);
           }
-
           // Error
           else if (state is AuthError) {
             AppUtils.showCustomSnackBar(context, state.error,isError: true);
@@ -166,7 +172,7 @@ class _AuthOtpScreenState extends State<AuthOtpScreen> {
                     final otp = otpController.text.trim();
                     if (otp.length == 6) {
                       context.read<AuthBloc>().add(
-                        VerifyOtpEvent(widget.verificationId, otp),
+                        VerifyOtpEvent(widget.verificationId, otp,collegeId: widget.collegeDetail.id),
                       );
                     } else {
                       AppUtils.showCustomSnackBar(

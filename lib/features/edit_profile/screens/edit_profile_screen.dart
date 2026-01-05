@@ -67,6 +67,28 @@ class EditProfileOptionsScreen extends StatelessWidget {
                     context.push('/editAddressDetail', extra: student);
                   },
                 ),
+                const SizedBox(height: 12),
+                _buildOptionCard(
+                  context,
+                  title: "Update Roll/Reg. No",
+                  subtitle: "Change Roll or Reg. Number",
+                  icon: MaterialCommunityIcons.format_list_numbered,
+                  color: Colors.pink,
+                  onClick: () {
+                    context.push('/update-roll-reg-no', extra: student);
+                  },
+                ),
+                const SizedBox(height: 12),
+                _buildOptionCard(
+                  context,
+                  title: "Section Details",
+                  subtitle: "Review your section details",
+                  icon: MaterialCommunityIcons.details,
+                  color: Colors.brown,
+                  onClick: () {
+                    context.push('/section-details', extra: student.sectionId);
+                  },
+                ),
               ],
             ),
           ),

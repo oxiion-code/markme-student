@@ -13,7 +13,8 @@ abstract class TimeTableEvent extends Equatable {
 
 class FetchTimeTableForStudentEvent extends TimeTableEvent{
   final String sectionId;
-  const FetchTimeTableForStudentEvent({required this.sectionId});
+  final String collegeId;
+  const FetchTimeTableForStudentEvent({required this.sectionId, required this.collegeId});
   @override
   List<Object?> get props => [sectionId];
 }

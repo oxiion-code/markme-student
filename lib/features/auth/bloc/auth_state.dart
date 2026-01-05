@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../core/models/college_detail.dart';
 import '../../student/models/student.dart';
 import '../models/auth_info.dart';
 
@@ -70,4 +71,13 @@ class StudentUpdateSuccess extends AuthState {
 
   @override
   List<Object?> get props => [student];
+}
+class LoadedAllCollegeDetails extends AuthState{
+  final List<CollegeDetail> colleges;
+  const LoadedAllCollegeDetails({required this.colleges});
+  @override
+  List<Object?> get props => [colleges];
+}
+class SelectCollegeLoading extends AuthState{
+
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:markme_student/core/di/college_hive_service.dart';
 import 'package:markme_student/features/student/models/student.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -7,8 +8,10 @@ import '../../../core/theme/app_colors.dart';
 class HomeAppBar extends StatelessWidget{
   final Student student;
   const HomeAppBar({super.key,required this.student});
+
   @override
   Widget build(BuildContext context) {
+    final college=CollegeHiveService.getCollege()!;
     return Container(
       decoration: BoxDecoration(
         color: AppColors.primary.withAlpha((0.94 * 255).toInt()), // fix for withValues
@@ -35,32 +38,42 @@ class HomeAppBar extends StatelessWidget{
                 },
               ),
               const SizedBox(width: 6),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "GITA College, Bhubaneswar",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 0.4,
+              const SizedBox(width: 6),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      college.collegeName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 0.4,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    student.name,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
+                    const SizedBox(height: 2),
+                    Text(
+                      student.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+                  ],
+                ),
               ),
+
               const Spacer(),
+
+
               CircleAvatar(
                 radius: 18,
                 backgroundColor: Colors.white30,

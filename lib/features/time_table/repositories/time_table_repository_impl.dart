@@ -16,10 +16,10 @@ class TimeTableRepositoryImpl extends TimeTableRepository {
   });
 
   @override
-  Future<Either<AppFailure, TimeTable>> fetchTimeTableForStudent(String sectionId) async {
+  Future<Either<AppFailure, TimeTable>> fetchTimeTableForStudent(String sectionId,String collegeId) async {
     try {
       // 1️⃣ Get the section document to read currentSemesterId
-      final sectionDoc = await firestore.collection('sections').doc(sectionId).get();
+      final sectionDoc = await firestore.collection('sections').doc(collegeId).collection('sections').doc(sectionId).get();
       if (!sectionDoc.exists) {
         return Left(AppFailure(message: "Section not found"));
       }
@@ -32,7 +32,7 @@ class TimeTableRepositoryImpl extends TimeTableRepository {
       }
 
       // 2️⃣ Fetch timetable directly using currentSemesterId as document ID
-      final timetableDoc = await firestore.collection('timetables').doc(currentSemesterId).get();
+      final timetableDoc = await firestore.collection('timetables').doc(collegeId).collection('timetables').doc(currentSemesterId).get();
 
       if (!timetableDoc.exists) {
         return Left(AppFailure(message: "No timetable found for the current semester"));
@@ -46,5 +46,4 @@ class TimeTableRepositoryImpl extends TimeTableRepository {
       return Left(AppFailure(message: e.toString()));
     }
   }
-
 }

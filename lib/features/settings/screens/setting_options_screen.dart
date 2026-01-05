@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:markme_student/core/di/college_hive_service.dart';
 import 'package:markme_student/core/utils/app_utils.dart';
 import 'package:markme_student/features/auth/bloc/auth_bloc.dart';
 import 'package:markme_student/features/auth/bloc/auth_event.dart';
 import 'package:markme_student/features/auth/bloc/auth_state.dart';
+import 'package:markme_student/features/student/models/student.dart';
+import 'package:markme_student/features/student/models/student_cubit.dart';
 
 class SettingOptionsScreen extends StatelessWidget {
   const SettingOptionsScreen({super.key});
@@ -69,10 +72,15 @@ class SettingOptionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final college=CollegeHiveService.getCollege()!;
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is LogoutSuccess) {
-          context.go("/authPhoneNumber");
+          final studentCubeIt=StudentCubit();
+          studentCubeIt.clearStudent();
+          CollegeHiveService.deleteCollege();
+          AppUtils.showCustomSnackBar(context, "Logout Success",);
+          context.go("/authPhoneNumber",extra: college);
         } else if (state is AuthError) {
           AppUtils.showCustomSnackBar(context, state.error, isError: true);
         }

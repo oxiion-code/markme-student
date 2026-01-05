@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:markme_student/core/di/college_hive_service.dart';
 import 'package:markme_student/core/utils/app_utils.dart';
 import 'package:markme_student/features/student/models/student.dart';
 import 'package:markme_student/features/edit_profile/bloc/edit_profile_bloc.dart';
@@ -18,6 +19,7 @@ class EditAddressScreen extends StatefulWidget {
 
 class _EditAddressScreenState extends State<EditAddressScreen> {
   final _formKey = GlobalKey<FormState>();
+  final String collegeId= CollegeHiveService.getCollege()!.id;
 
   // Normal address controllers
   late TextEditingController _atPoController;
@@ -84,6 +86,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
         UpdateProfileOfStudentEvent(
           student: updatedStudent,
           profilePhoto: null, // no photo change
+          collegeId: collegeId
         ),
       );
     }

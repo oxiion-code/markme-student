@@ -24,7 +24,7 @@ class StudentBloc extends Bloc<StudentEvent, StudentState> {
     Emitter<StudentState> emit,
   ) async {
     emit(StudentLoading());
-    final result = await studentRepository.getAllCourses();
+    final result = await studentRepository.getAllCourses(event.collegeId);
     result.fold(
       (failure) => emit(StudentError(failure.message)),
       (courses) => emit(CoursesLoaded(courses)),
@@ -36,7 +36,7 @@ class StudentBloc extends Bloc<StudentEvent, StudentState> {
     Emitter<StudentState> emit,
   ) async {
     emit(StudentLoading());
-    final result = await studentRepository.getBatchesByBranchId(event.branchId);
+    final result = await studentRepository.getBatchesByBranchId(event.branchId,event.collegeId);
     result.fold(
       (failure) => emit(StudentError(failure.message)),
       (batches) => emit(BatchesLoaded(batches)),
@@ -50,6 +50,7 @@ class StudentBloc extends Bloc<StudentEvent, StudentState> {
     emit(StudentLoading());
     final result = await studentRepository.getBranchesByCourseId(
       event.courseId,
+      event.collegeId
     );
     result.fold(
       (failure) => emit(StudentError(failure.message)),
@@ -64,6 +65,7 @@ class StudentBloc extends Bloc<StudentEvent, StudentState> {
     emit(StudentLoading());
     final result = await studentRepository.getSectionsByBatchId(
       batchId: event.batchId,
+      collegeId: event.collegeId
     );
     result.fold(
       (failure) => emit(StudentError(failure.message)),
@@ -79,6 +81,7 @@ class StudentBloc extends Bloc<StudentEvent, StudentState> {
     final isStudentExist = await studentRepository.getStudent(
       event.student.rollNo,
       event.student.regdNo,
+      event.collegeId
     );
 
     if (isStudentExist.isLeft()) {
@@ -86,17 +89,38 @@ class StudentBloc extends Bloc<StudentEvent, StudentState> {
       final registerStudent = await authRepository.updateStudentData(
         profilePhoto: event.imageFile,
         student: event.student,
+        collegeId: event.collegeId,
       );
-
-      registerStudent.fold(
-            (failure) => emit(StudentRegistrationError(failure.message)),
-            (student) => emit(StudentRegistered(student)),
+      await registerStudent.fold(
+            (failure){
+          emit(StudentRegistrationError(failure.message));
+        },
+            (student) async {
+          // ✅ AFTER successful registration → update seat allocation
+          final seatResult = await studentRepository
+              .updateSeatAllocationForStudent(
+            event.collegeId,
+            event.student.batchId,
+          );
+          seatResult.fold(
+                (failure) {
+              emit(StudentRegistrationError(
+                "Student registered but seat allocation failed: ${failure.message}",
+              ));
+            },
+                (_) {
+              emit(StudentRegistered(student));
+            },
+          );
+        },
       );
-    } else {
+    }
+    else {
       final student = isStudentExist.getOrElse(() => event.student);
 
       final deleteResult = await studentRepository.deleteStudentCompletely(
         student.id,
+        event.collegeId
       );
 
       deleteResult.fold(

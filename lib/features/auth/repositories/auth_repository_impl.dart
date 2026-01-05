@@ -4,15 +4,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:markme_student/features/student/models/student.dart';
 
 import '../../../core/error/failure.dart';
+import '../../../core/models/college_detail.dart';
+import '../../edit_profile/models/student_permission.dart';
 import '../models/auth_info.dart';
 import 'auth_repository.dart';
 
 import 'dart:async';
 import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AuthRepositoryImpl extends AuthRepository {
@@ -23,9 +22,17 @@ class AuthRepositoryImpl extends AuthRepository {
   AuthRepositoryImpl(this.firebaseAuth, this.firestore, this.storage);
 
   @override
-  Future<Either<AppFailure, Student>> getUserdata({required String uid}) async {
+  Future<Either<AppFailure, Student>> getUserdata({
+    required String uid,
+    required String collegeId,
+  }) async {
     try {
-      final docSnapshot = await firestore.collection("students").doc(uid).get();
+      final docSnapshot = await firestore
+          .collection("students")
+          .doc(collegeId)
+          .collection("students")
+          .doc(uid)
+          .get();
 
       if (!docSnapshot.exists) {
         return Left(AppFailure(message: "User not registered"));
@@ -37,9 +44,12 @@ class AuthRepositoryImpl extends AuthRepository {
       final deviceToken = await FirebaseMessaging.instance.getToken();
 
       if (deviceToken != null && data["deviceToken"] != deviceToken) {
-        await firestore.collection("students").doc(uid).update({
-          "deviceToken": deviceToken,
-        });
+        await firestore
+            .collection("students")
+            .doc(collegeId)
+            .collection("students")
+            .doc(uid)
+            .update({"deviceToken": deviceToken});
       }
 
       final updatedUser = user.copyWith(
@@ -192,35 +202,60 @@ class AuthRepositoryImpl extends AuthRepository {
       return Left(AppFailure(message: "Unexpected error: ${e.toString()}"));
     }
   }
-
   @override
   Future<Either<AppFailure, Student>> updateStudentData({
     required Student student,
     File? profilePhoto,
+    required String collegeId,
   }) async {
     try {
-      String? downloadUrl;
+      final uid = firebaseAuth.currentUser!.uid;
 
+      // 🔐 Permissions doc reference
+      final permissionRef = firestore
+          .collection("students")
+          .doc(collegeId)
+          .collection("students")
+          .doc(uid)
+          .collection("permissions")
+          .doc("main");
+
+      // 1️⃣ Get permissions
+      final permissionSnap = await permissionRef.get();
+      StudentPermissions permissions;
+      if (!permissionSnap.exists) {
+        // First time setup: allow edit once
+        permissions = const StudentPermissions(canEditProfile: true);
+        await permissionRef.set(permissions.toMap());
+      } else {
+        permissions = StudentPermissions.fromMap(permissionSnap.data());
+      }
+      if (!permissions.canEditProfile) {
+        return Left(AppFailure(message: "You are not allowed to edit your profile"));
+      }
+      // 3️⃣ Upload profile photo if provided
+      String? downloadUrl;
       if (profilePhoto != null) {
-        // Use UID instead of regdNo for storage path
-        final uid = firebaseAuth.currentUser!.uid;
         downloadUrl = await uploadProfileImage(profilePhoto, uid);
       }
-
+      // 4️⃣ Prepare updated student
       final updatedStudent = student.copyWith(
         profilePhotoUrl: downloadUrl ?? student.profilePhotoUrl,
       );
 
-      final uid = firebaseAuth.currentUser!.uid;
-
+      // 5️⃣ Update student document
       await firestore
           .collection("students")
+          .doc(collegeId)
+          .collection("students")
           .doc(uid)
-          .set(updatedStudent.toMap());
+          .set(updatedStudent.toMap(), SetOptions(merge: true));
+
+      // 6️⃣ After first update, set canEditProfile = false
+      await permissionRef.set(const StudentPermissions(canEditProfile: false).toMap());
 
       return Right(updatedStudent);
     } on FirebaseException catch (e) {
-      // Firestore-specific errors
       return Left(AppFailure(message: "Firestore error: ${e.message}"));
     } on TimeoutException {
       return Left(AppFailure(message: "Request timed out. Please try again."));
@@ -254,6 +289,20 @@ class AuthRepositoryImpl extends AuthRepository {
       throw Exception("Image upload timed out. Please try again.");
     } catch (e) {
       throw Exception("Unexpected error during image upload: $e");
+    }
+  }
+
+  @override
+  Future<Either<AppFailure, List<CollegeDetail>>> loadAllColleges() async {
+    try {
+      final snapshot = await firestore.collection('collegeList').get();
+      final colleges = snapshot.docs.map((doc) {
+        final data = doc.data();
+        return CollegeDetail.fromMap({...data, 'id': doc.id});
+      }).toList();
+      return Right(colleges);
+    } catch (e) {
+      return Left(AppFailure(message: e.toString()));
     }
   }
 }

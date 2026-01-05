@@ -1,5 +1,4 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:markme_student/core/widgets/loading.dart';
@@ -9,16 +8,22 @@ class AppUtils {
   static Future<String?> getCurrentDeviceToken() async {
     return await FirebaseMessaging.instance.getToken();
   }
-
-  static void showCustomSnackBar(BuildContext context, String message, {bool isError = false}) {
+  static void showCustomSnackBar(
+      BuildContext context,
+      String message, {
+        bool isError = false,
+      }) {
     ScaffoldMessenger.of(context)
       ..clearSnackBars()
       ..showSnackBar(
         SnackBar(
           content: Row(
             children: [
-              Icon(isError ? Icons.error_outline : Icons.check_circle_outline, color: Colors.white),
-              SizedBox(width: 8),
+              Icon(
+                isError ? Icons.error_outline : Icons.check_circle_outline,
+                color: Colors.white,
+              ),
+              const SizedBox(width: 8),
               Expanded(child: Text(message)),
             ],
           ),
@@ -28,14 +33,8 @@ class AppUtils {
             borderRadius: BorderRadius.circular(12),
           ),
           elevation: 8,
-          margin: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          duration: Duration(seconds: 3),
-          action: SnackBarAction(
-            label: 'OK',
-            textColor: Colors.white,
-            onPressed: () {},
-          ),
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          duration: const Duration(seconds: 3), // ✅ auto dismiss
         ),
       );
   }

@@ -4,19 +4,25 @@ import 'package:markme_student/features/class/models/class_session_with_flag.dar
 import 'package:markme_student/features/class/repository/class_repository.dart';
 import '../../../core/error/failure.dart';
 import '../models/class_session.dart';
+
 class ClassRepositoryImpl extends ClassRepository {
   final FirebaseFirestore firestore;
   ClassRepositoryImpl(this.firestore);
 
   @override
   Stream<Either<AppFailure, List<ClassSessionWithFlag>>> streamTodayClasses(
-      String sectionId,
-      String studentId,
-      ) async* {
+    String sectionId,
+    String studentId,
+    String collegeId,
+  ) async* {
     try {
       // 1️⃣ Fetch current semester number from section
-      final sectionDoc =
-      await firestore.collection("sections").doc(sectionId).get();
+      final sectionDoc = await firestore
+          .collection("sections")
+          .doc(collegeId)
+          .collection("sections")
+          .doc(sectionId)
+          .get();
 
       if (!sectionDoc.exists) {
         yield Left(AppFailure(message: "Section not found"));
@@ -33,11 +39,16 @@ class ClassRepositoryImpl extends ClassRepository {
 
       // 2️⃣ Stream classSessions of today with matching semesterNo
       final now = DateTime.now();
-      final startOfDay =
-          DateTime(now.year, now.month, now.day).millisecondsSinceEpoch;
+      final startOfDay = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ).millisecondsSinceEpoch;
       final endOfDay = startOfDay + const Duration(days: 1).inMilliseconds;
 
       yield* firestore
+          .collection("classSessions")
+          .doc(collegeId)
           .collection("classSessions")
           .where("sectionId", isEqualTo: sectionId)
           .where("semesterNo", isEqualTo: currentSemesterNo)
@@ -45,52 +56,55 @@ class ClassRepositoryImpl extends ClassRepository {
           .where("date", isLessThan: endOfDay)
           .snapshots()
           .asyncMap((snapshot) async {
-        try {
-          final sessions = snapshot.docs
-              .map((doc) => ClassSession.fromMap(doc.data()))
-              .toList();
+            try {
+              final sessions = snapshot.docs
+                  .map((doc) => ClassSession.fromMap(doc.data()))
+                  .toList();
 
-          // Collect attendanceIds
-          final attendanceIds = sessions
-              .map((s) => s.attendanceId)
-              .where((id) => id != null && id.isNotEmpty)
-              .toSet();
+              // Collect attendanceIds
+              final attendanceIds = sessions
+                  .map((s) => s.attendanceId)
+                  .where((id) => id != null && id.isNotEmpty)
+                  .toSet();
 
-          // Fetch student attendance for each session
-          final futures = attendanceIds.map((id) async {
-            final recordDoc = await firestore
-                .collection("attendance")
-                .doc(id)
-                .collection("records")
-                .doc(studentId)
-                .get();
+              // Fetch student attendance for each session
+              final futures = attendanceIds.map((id) async {
+                final recordDoc = await firestore
+                    .collection("attendance")
+                    .doc(collegeId)
+                    .collection("attendance")
+                    .doc(id)
+                    .collection("records")
+                    .doc(studentId)
+                    .get();
 
-            if (recordDoc.exists) {
-              final data = recordDoc.data();
-              return MapEntry(id!, data?['status'] == "present");
+                if (recordDoc.exists) {
+                  final data = recordDoc.data();
+                  return MapEntry(id!, data?['status'] == "present");
+                }
+                return MapEntry(id!, false);
+              }).toList();
+
+              final attendanceMap = Map<String, bool>.fromEntries(
+                await Future.wait(futures),
+              );
+
+              // Merge sessions with attendance info
+              final results = sessions.map((session) {
+                final attended = attendanceMap[session.attendanceId] ?? false;
+                return ClassSessionWithFlag(
+                  classSession: session,
+                  isStudentPresent: attended,
+                );
+              }).toList();
+
+              return Right<AppFailure, List<ClassSessionWithFlag>>(results);
+            } catch (e) {
+              return Left<AppFailure, List<ClassSessionWithFlag>>(
+                AppFailure(message: e.toString()),
+              );
             }
-            return MapEntry(id!, false);
-          }).toList();
-
-          final attendanceMap =
-          Map<String, bool>.fromEntries(await Future.wait(futures));
-
-          // Merge sessions with attendance info
-          final results = sessions.map((session) {
-            final attended = attendanceMap[session.attendanceId] ?? false;
-            return ClassSessionWithFlag(
-              classSession: session,
-              isStudentPresent: attended,
-            );
-          }).toList();
-
-          return Right<AppFailure, List<ClassSessionWithFlag>>(results);
-        } catch (e) {
-          return Left<AppFailure, List<ClassSessionWithFlag>>(
-            AppFailure(message: e.toString()),
-          );
-        }
-      });
+          });
     } catch (e) {
       yield Left(AppFailure(message: e.toString()));
     }

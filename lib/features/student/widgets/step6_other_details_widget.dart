@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class Step6OtherDetails extends StatelessWidget {
+class Step6OtherDetails extends StatefulWidget {
   final TextEditingController admissionDateController;
   final TextEditingController genderController;
   final TextEditingController regdNoController;
@@ -15,6 +15,18 @@ class Step6OtherDetails extends StatelessWidget {
   });
 
   static const List<String> genderOptions = ['Male', 'Female', 'Other'];
+
+  @override
+  State<Step6OtherDetails> createState() => _Step6OtherDetailsState();
+}
+
+class _Step6OtherDetailsState extends State<Step6OtherDetails> {
+  bool noRegId = false;
+  String? tempId;
+  String _generateTempId() {
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    return "TMP-${timestamp.toString().substring(7)}";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +50,7 @@ class Step6OtherDetails extends StatelessWidget {
             _inputField(
               context: context,
               label: "Admission Date",
-              controller: admissionDateController,
+              controller: widget.admissionDateController,
               icon: Icons.calendar_today,
               isDate: true,
             ),
@@ -48,27 +60,79 @@ class Step6OtherDetails extends StatelessWidget {
             _dropdownField(
               context: context,
               label: "Gender",
-              controller: genderController,
+              controller: widget.genderController,
               icon: Icons.person_outline,
-              options: genderOptions,
+              options: Step6OtherDetails.genderOptions,
             ),
 
             const SizedBox(height: 18),
 
-            _inputField(
+            _inputIdField(
+              noRegId: noRegId,
               label: "Registration No",
-              controller: regdNoController,
+              controller: widget.regdNoController,
               icon: Icons.badge_outlined,
               keyboardType: TextInputType.number,
             ),
-
             const SizedBox(height: 18),
 
-            _inputField(
+            _inputIdField(
+              noRegId: noRegId,
               label: "Roll No",
-              controller: rollNoController,
+              controller: widget.rollNoController,
               icon: Icons.confirmation_number_outlined,
               keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 8),
+            CheckboxListTile(
+              value: noRegId,
+              onChanged: (value) {
+                setState(() {
+                  noRegId = value ?? false;
+                  if (!noRegId) {
+                    tempId = null;
+                    widget.regdNoController.clear();
+                    widget.rollNoController.clear();
+                  }
+                });
+              },
+              title: const Text(
+                "I don’t have a Registration ID / Roll ID",
+                style: TextStyle(fontSize: 14),
+              ),
+              controlAffinity: ListTileControlAffinity.leading,
+              contentPadding: EdgeInsets.zero,
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                if (tempId == null && noRegId==true)...[
+                  Expanded(
+                  child: ElevatedButton(
+                    onPressed: tempId == null
+                        ? () {
+                            setState(() {
+                              tempId = _generateTempId();
+                              widget.regdNoController.text = tempId!;
+                              widget.rollNoController.text = tempId!;
+                            });
+                          }
+                        : null,
+                    child: const Text("Generate Temporary ID"),
+                  ),
+                )],
+                if (tempId != null&& noRegId==true) ...[
+                  const SizedBox(width: 12),
+                  Text(
+                    "Your Temporary Id: ${tempId!}",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ],
             ),
             const SizedBox(height: 100),
           ],
@@ -97,20 +161,20 @@ class Step6OtherDetails extends StatelessWidget {
       readOnly: isDate,
       onTap: isDate
           ? () async {
-        final ctx = context!;
-        DateTime? picked = await showDatePicker(
-          context: ctx,
-          initialDate: DateTime.now(),
-          firstDate: DateTime(1980),
-          lastDate: DateTime(2100),
-        );
-        if (picked != null) {
-          controller.text =
-          "${picked.day.toString().padLeft(2, '0')}/"
-              "${picked.month.toString().padLeft(2, '0')}/"
-              "${picked.year}";
-        }
-      }
+              final ctx = context!;
+              DateTime? picked = await showDatePicker(
+                context: ctx,
+                initialDate: DateTime.now(),
+                firstDate: DateTime(1980),
+                lastDate: DateTime(2100),
+              );
+              if (picked != null) {
+                controller.text =
+                    "${picked.day.toString().padLeft(2, '0')}/"
+                    "${picked.month.toString().padLeft(2, '0')}/"
+                    "${picked.year}";
+              }
+            }
           : null,
       decoration: InputDecoration(
         labelText: label,
@@ -121,7 +185,76 @@ class Step6OtherDetails extends StatelessWidget {
         prefixIcon: Icon(icon, color: Colors.blueAccent),
         filled: true,
         fillColor: Colors.grey.shade50,
-        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 14,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.grey.shade400),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Colors.blueAccent, width: 1.6),
+        ),
+      ),
+    );
+  }
+
+  Widget _inputIdField({
+    required String label,
+    required TextEditingController controller,
+    required IconData icon,
+    BuildContext? context,
+    TextInputType keyboardType = TextInputType.text,
+    bool isDate = false,
+    required bool noRegId,
+  }) {
+    return TextFormField(
+      enabled: !noRegId,
+      validator: (value) {
+        if (!noRegId && (value == null || value.isEmpty)) {
+          return 'Please enter $label';
+        }
+        return null;// valid
+      },
+      controller: controller,
+      keyboardType: keyboardType,
+      readOnly: isDate,
+      onTap: isDate
+          ? () async {
+              final ctx = context!;
+              DateTime? picked = await showDatePicker(
+                context: ctx,
+                initialDate: DateTime.now(),
+                firstDate: DateTime(1980),
+                lastDate: DateTime(2100),
+              );
+              if (picked != null) {
+                controller.text =
+                    "${picked.day.toString().padLeft(2, '0')}/"
+                    "${picked.month.toString().padLeft(2, '0')}/"
+                    "${picked.year}";
+              }
+            }
+          : null,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(
+          color: Colors.black54, // 👈 light grey color
+          fontSize: 14,
+        ),
+        prefixIcon: Icon(icon, color: Colors.blueAccent),
+        filled: true,
+        fillColor: Colors.grey.shade50,
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: Colors.grey.shade400),
@@ -159,7 +292,10 @@ class Step6OtherDetails extends StatelessWidget {
         prefixIcon: Icon(icon, color: Colors.blueAccent),
         filled: true,
         fillColor: Colors.grey.shade50,
-        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: Colors.grey.shade400),

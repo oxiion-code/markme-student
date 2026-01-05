@@ -1,18 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_vector_icons/flutter_vector_icons.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class DeveloperDetailsScreen extends StatelessWidget {
   const DeveloperDetailsScreen({super.key});
-  Future<void> _launchURL(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.platformDefault);
-    } else {
-      debugPrint('Could not launch $url');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,7 +60,7 @@ class DeveloperDetailsScreen extends StatelessWidget {
                         Icon(Icons.email, color: Colors.blue),
                         SizedBox(width: 8),
                         Text(
-                          "rudra.narayan.rath.01\n@gmail.com",
+                          "oxiionglobal@gmail.com",
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.blue,
@@ -82,23 +71,7 @@ class DeveloperDetailsScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  // Social Links using flutter_vector_icons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        onPressed: () => _launchURL('www.linkedin.com/in/rudra-narayan-rath-a77a02264'),
-                        icon: const Icon(Entypo.linkedin, color: Colors.blue),
-                        iconSize: 45,
-                      ),
-                      const SizedBox(width: 20),
-                      IconButton(
-                        onPressed: () => _launchURL('https://leetcode.com/R2024/'),
-                        icon: const Icon(MaterialCommunityIcons.code_braces, color: Colors.orange),
-                        iconSize: 40,
-                      ),
-                    ],
-                  ),
+
                 ],
               ),
             ),

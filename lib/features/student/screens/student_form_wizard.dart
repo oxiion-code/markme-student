@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:markme_student/core/di/college_hive_service.dart';
 import 'package:markme_student/core/utils/app_utils.dart';
 import 'package:markme_student/features/student/bloc/student_state.dart';
 import 'package:markme_student/features/student/models/student.dart';
@@ -30,9 +31,8 @@ class _StudentFormStepperState extends State<StudentFormStepper> {
   final PageController _pageController = PageController();
   final _formKey = GlobalKey<FormState>();
   int _currentStep = 0;
-
+  final collegeId= CollegeHiveService.getCollege()!.id;
   // Controllers
-  final TextEditingController nameController = TextEditingController();
   final TextEditingController rollNoController = TextEditingController();
   final TextEditingController regdNoController = TextEditingController();
   final TextEditingController branchController = TextEditingController();
@@ -55,6 +55,10 @@ class _StudentFormStepperState extends State<StudentFormStepper> {
   final TextEditingController pincodeController = TextEditingController();
   final TextEditingController groupController = TextEditingController();
 
+  final TextEditingController firstNameController=TextEditingController();
+  final TextEditingController middleNameController=TextEditingController();
+  final TextEditingController lastNameController=TextEditingController();
+
   File? profileImage;
 
   Future<void> _pickImage() async {
@@ -66,12 +70,12 @@ class _StudentFormStepperState extends State<StudentFormStepper> {
     }
   }
 
-  void _nextPage() {
+  void _nextPage()async {
     FocusScope.of(context).unfocus();
     // Validate the current step before moving forward
     if (_formKey.currentState!.validate()) {
       if (_currentStep == 0 && profileImage == null) {
-        AppUtils.showCustomSnackBar(context, "Select profile photo");
+        AppUtils.showCustomSnackBar(context, "Select profile photo",isError: true);
         return; // stop navigation
       }
       if (_currentStep < 5) {
@@ -80,11 +84,68 @@ class _StudentFormStepperState extends State<StudentFormStepper> {
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
-      } else {
-        _submitForm();
+      } else  {
+        final isConfirmed=  await showStudentDeclarationDialog(context);
+        if(isConfirmed){
+          _submitForm();
+        }
       }
     }
   }
+  Future<bool> showStudentDeclarationDialog(BuildContext context) async {
+    return await showDialog<bool>(
+      context: context,
+      barrierDismissible: false, // ❌ cannot close by tapping outside
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            "Student Declaration",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  "Please read carefully before proceeding:",
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+                SizedBox(height: 12),
+                Text(
+                  "• I confirm that all the information provided by me is true and filled by myself.\n\n"
+                      "• All details will be verified by the college administration with the documents uploaded by me.\n\n"
+                      "• If any information is found to be false or mismatched during verification:\n"
+                      "  - My account will be permanently deleted.\n"
+                      "  - My mobile number will be permanently blocked.\n\n"
+                      "• Only after successful verification, I will be permitted to use this application.",
+                  style: TextStyle(fontSize: 14, height: 1.4),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, false); // ❌ Not agreed
+              },
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, true); // ✅ Agreed
+              },
+              child: const Text("I Agree & Continue"),
+            ),
+          ],
+        );
+      },
+    ) ??
+        false;
+  }
+
 
   void _prevPage() {
     if (_currentStep > 0) {
@@ -98,6 +159,11 @@ class _StudentFormStepperState extends State<StudentFormStepper> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
+      final firstName= firstNameController.text.trim();
+      final middleName=middleNameController.text.trim();
+      final lastName=lastNameController.text.trim();
+      final name="$firstName $middleName $lastName".toUpperCase();
+      debugPrint(name);
       final student = Student(
         id: FirebaseAuth
             .instance
@@ -108,7 +174,7 @@ class _StudentFormStepperState extends State<StudentFormStepper> {
             "",
         rollNo: rollNoController.text.trim(),
         regdNo: regdNoController.text.trim(),
-        name: nameController.text.trim(),
+        name: name,
         branchId: branchController.text.trim(),
         sectionId: sectionController.text.trim(),
         group: groupController.text.trim(),
@@ -140,7 +206,7 @@ class _StudentFormStepperState extends State<StudentFormStepper> {
       );
 
       context.read<StudentBloc>().add(
-        RegisterStudentEvent(student, profileImage!),
+        RegisterStudentEvent(student, profileImage!,collegeId: collegeId),
       );
     }
   }
@@ -149,9 +215,11 @@ class _StudentFormStepperState extends State<StudentFormStepper> {
   Widget build(BuildContext context) {
     final steps = [
       Step1Profile(
-        nameController: nameController,
         profileImage: profileImage,
         onPickImage: _pickImage,
+        firstNameController: firstNameController,
+        middleNameController: middleNameController,
+        lastNameController: lastNameController,
       ),
       Step2BasicInfo(
         groupController: groupController,
@@ -199,15 +267,15 @@ class _StudentFormStepperState extends State<StudentFormStepper> {
               if (state is StudentRegistrationError) {
                 AppUtils.showCustomSnackBar(
                   context,
-                  "Registration failed",
+                  "Registration failed",isError: true
                 );
                 Navigator.pop(context);
-
-                context.go("/authPhoneNumber");
+                final college=CollegeHiveService.getCollege()!;
+                context.go("/authPhoneNumber", extra: college);
               } else if (state is StudentRegistered) {
                 AppUtils.showCustomSnackBar(
                   context,
-                  "Registration Success",
+                  "Registration Success",isError: false
                 );
                 Navigator.pop(context);
                 context.read<StudentCubit>().setStudent(state.student);

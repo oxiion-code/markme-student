@@ -1,13 +1,13 @@
 class Student {
-  final String id; // ✅ Firebase UID
-  final String phoneNumber; // ✅ Phone number
+  final String id; // Firebase UID
+  final String phoneNumber;
   final String profilePhotoUrl;
   final String rollNo;
   final String regdNo;
   final String name;
-  final String branchId; // 🔥 Changed from branch to branchId
-  final String sectionId; // 🔥 New field
-  final String group; // 🔥 New field
+  final String branchId;
+  final String sectionId;
+  final String group;
   final String fatherName;
   final String motherName;
   final String studentMobileNo;
@@ -18,11 +18,14 @@ class Student {
   final String category;
   final String admissionDate;
   final String sex;
-  final String deviceToken; // For notifications & attendance tracking
-  final String batchId; // Link student to batch
-  final String courseId; // Link student to course
+  final String deviceToken;
+  final String batchId;
+  final String courseId;
   final HostelAddress hostelAddress;
   final NormalAddress normalAddress;
+
+  /// 🔥 UPDATED: verification status
+  final String isProfileVerified;
 
   Student({
     required this.id,
@@ -49,6 +52,7 @@ class Student {
     required this.courseId,
     required this.hostelAddress,
     required this.normalAddress,
+    this.isProfileVerified = "no_data", // ✅ default
   });
 
   Student copyWith({
@@ -76,6 +80,7 @@ class Student {
     String? courseId,
     HostelAddress? hostelAddress,
     NormalAddress? normalAddress,
+    String? isProfileVerified,
   }) {
     return Student(
       id: id ?? this.id,
@@ -102,10 +107,13 @@ class Student {
       courseId: courseId ?? this.courseId,
       hostelAddress: hostelAddress ?? this.hostelAddress,
       normalAddress: normalAddress ?? this.normalAddress,
+      isProfileVerified: isProfileVerified ?? this.isProfileVerified,
     );
   }
 
-  factory Student.fromJson(Map<String, dynamic> json) => Student.fromMap(json);
+  factory Student.fromJson(Map<String, dynamic> json) =>
+      Student.fromMap(json);
+
   Map<String, dynamic> toJson() => toMap();
 
   factory Student.fromMap(Map<String, dynamic> map) {
@@ -116,9 +124,9 @@ class Student {
       rollNo: map['rollNo'] ?? '',
       regdNo: map['regdNo'] ?? '',
       name: map['name'] ?? '',
-      branchId: map['branchId'] ?? '', // 🔥 updated
-      sectionId: map['sectionId'] ?? '', // 🔥 new
-      group: map['group'] ?? '', // 🔥 new
+      branchId: map['branchId'] ?? '',
+      sectionId: map['sectionId'] ?? '',
+      group: map['group'] ?? '',
       fatherName: map['fatherName'] ?? '',
       motherName: map['motherName'] ?? '',
       studentMobileNo: map['studentMobileNo'] ?? '',
@@ -134,6 +142,7 @@ class Student {
       courseId: map['courseId'] ?? '',
       hostelAddress: HostelAddress.fromMap(map['hostelAddress'] ?? {}),
       normalAddress: NormalAddress.fromMap(map['normalAddress'] ?? {}),
+      isProfileVerified: map['isProfileVerified'] ?? "no_data", // ✅ safe
     );
   }
 
@@ -145,9 +154,9 @@ class Student {
       'rollNo': rollNo,
       'regdNo': regdNo,
       'name': name,
-      'branchId': branchId, // 🔥 updated
-      'sectionId': sectionId, // 🔥 new
-      'group': group, // 🔥 new
+      'branchId': branchId,
+      'sectionId': sectionId,
+      'group': group,
       'fatherName': fatherName,
       'motherName': motherName,
       'studentMobileNo': studentMobileNo,
@@ -163,6 +172,7 @@ class Student {
       'courseId': courseId,
       'hostelAddress': hostelAddress.toMap(),
       'normalAddress': normalAddress.toMap(),
+      'isProfileVerified': isProfileVerified, // 🔥 stored as string
     };
   }
 }

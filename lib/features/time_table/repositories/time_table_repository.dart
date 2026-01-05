@@ -7,5 +7,5 @@ import '../models/time_table.dart';
 
 
 abstract class TimeTableRepository{
-  Future<Either<AppFailure,TimeTable>> fetchTimeTableForStudent(String sectionId);
+  Future<Either<AppFailure,TimeTable>> fetchTimeTableForStudent(String sectionId,String collegeId);
 }
