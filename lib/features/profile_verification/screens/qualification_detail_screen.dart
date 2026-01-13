@@ -67,128 +67,135 @@ class _QualificationDetailsScreenState extends State<QualificationDetailsScreen>
           ),
           elevation: 0,
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.blue.shade50, Colors.indigo.shade50],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.blue.shade50, Colors.indigo.shade50],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.blue.shade100, width: 1),
                   ),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.blue.shade100, width: 1),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.school_rounded, size: 48, color: Colors.blue.shade600),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Enter your educational qualifications',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Ensure details match your uploaded documents exactly',
+                        style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+                      ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(Icons.school_rounded, size: 48, color: Colors.blue.shade600),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Enter your educational qualifications',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Ensure details match your uploaded documents exactly',
-                      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
-                    ),
-                  ],
+                const SizedBox(height: 32),
+          
+                // Qualifications List
+                Text(
+                  'Qualifications',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.grey[900]),
                 ),
-              ),
-              const SizedBox(height: 32),
-
-              // Qualifications List
-              Text(
-                'Qualifications',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.grey[900]),
-              ),
-              const SizedBox(height: 20),
-
-              ...qualifications.asMap().entries.map((entry) {
-                int index = entry.key;
-                return QualificationCard(
-                  key: ValueKey('qual_$index'), // Unique key for proper rebuild
-                  qualification: entry.value,
-                  qualificationTypes: qualificationTypes,
-                  boards: boards,
-                  index: index,
-                  onUpdated: (updatedQualification) {
-                    setState(() {
-                      qualifications[index] = updatedQualification;
-                    });
-                  },
-                  onDelete: qualifications.length > 1
-                      ? () {
-                    setState(() {
-                      qualifications.removeAt(index);
-                    });
-                  }
-                      : null,
-                );
-              }),
-
-              const SizedBox(height: 24),
-
-              Center(
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      qualifications.add({
-                        'type': '',
-                        'institution': '',
-                        'board': '',
-                        'stream': '',
-                        'year': '',
-                        'percentage': '',
-                        'notes': '',
-                        'isValid': false,
+                const SizedBox(height: 20),
+          
+                ...qualifications.asMap().entries.map((entry) {
+                  int index = entry.key;
+                  return QualificationCard(
+                    key: ValueKey('qual_$index'), // Unique key for proper rebuild
+                    qualification: entry.value,
+                    qualificationTypes: qualificationTypes,
+                    boards: boards,
+                    index: index,
+                    onUpdated: (updatedQualification) {
+                      setState(() {
+                        qualifications[index] = updatedQualification;
                       });
-                    });
-                  },
-                  icon: const Icon(Icons.add_circle_outline, color: Colors.white),
-                  label: const Text('Add Another Qualification', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue.shade600,
-                    foregroundColor: Colors.white,
-                    elevation: 2,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    },
+                    onDelete: qualifications.length > 1
+                        ? () {
+                      setState(() {
+                        qualifications.removeAt(index);
+                      });
+                    }
+                        : null,
+                  );
+                }),
+          
+                const SizedBox(height: 24),
+          
+                Center(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        qualifications.add({
+                          'type': '',
+                          'institution': '',
+                          'board': '',
+                          'stream': '',
+                          'year': '',
+                          'percentage': '',
+                          'notes': '',
+                          'isValid': false,
+                        });
+                      });
+                    },
+                    icon: const Icon(Icons.add_circle_outline, color: Colors.white),
+                    label: const Text('Add Another Qualification', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade600,
+                      foregroundColor: Colors.white,
+                      elevation: 2,
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 100),
-            ],
+                const SizedBox(height: 100),
+              ],
+            ),
           ),
         ),
-        bottomSheet: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 20, offset: const Offset(0, -2))],
+        bottomSheet: Padding(
+         padding:  EdgeInsets.only(
+            bottom: MediaQuery.of(context).padding.bottom + 16,
           ),
-          child: SafeArea(
-            child: SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: _isSubmitEnabled() ? _showConfirmationDialog : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _isSubmitEnabled() ? null : Colors.grey[300],
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor: Colors.grey[300],
-                  disabledForegroundColor: Colors.grey[500],
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                ),
-                child: Text(
-                  'Submit Education Details (${_validQualificationsCount()} ${_validQualificationsCount() == 1 ? 'valid' : 'valid'})',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 20, offset: const Offset(0, -2))],
+            ),
+            child: SafeArea(
+              child: SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: _isSubmitEnabled() ? _showConfirmationDialog : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _isSubmitEnabled() ? null : Colors.grey[300],
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.grey[300],
+                    disabledForegroundColor: Colors.grey[500],
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
+                  child: Text(
+                    'Submit Education Details (${_validQualificationsCount()} ${_validQualificationsCount() == 1 ? 'valid' : 'valid'})',
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ),

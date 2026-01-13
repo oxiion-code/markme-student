@@ -45,71 +45,73 @@ class _PlacementOpportunitiesScreenState
         title: const Text('Placement Opportunities'),
         centerTitle: true,
       ),
-      body: BlocBuilder<OpportunitiesBloc, OpportunitiesState>(
-        builder: (context, state) {
-          if (state is OpportunitiesLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (state is OpportunitiesError) {
-            return Center(
-              child: Text(
-                state.message,
-                style: TextStyle(
-                  color: theme.colorScheme.error,
-                  fontSize: 14,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            );
-          }
-
-          if (state is PlacementsLoadedForStudent) {
-            if (state.sessions.isEmpty) {
+      body: SafeArea(
+        child: BlocBuilder<OpportunitiesBloc, OpportunitiesState>(
+          builder: (context, state) {
+            if (state is OpportunitiesLoading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+        
+            if (state is OpportunitiesError) {
               return Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.work_outline,
-                      size: 40,
-                      color: theme.colorScheme.primary.withOpacity(0.6),
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'No live placement sessions available',
-                      style: TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'New opportunities will appear here once announced.',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
+                child: Text(
+                  state.message,
+                  style: TextStyle(
+                    color: theme.colorScheme.error,
+                    fontSize: 14,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               );
             }
-
-            return ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-              itemCount: state.sessions.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final session = state.sessions[index];
-                return _PlacementSessionCard(session: session,student: widget.student,);
-              },
-            );
-          }
-
-          return const SizedBox.shrink();
-        },
+        
+            if (state is PlacementsLoadedForStudent) {
+              if (state.sessions.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.work_outline,
+                        size: 40,
+                        color: theme.colorScheme.primary.withValues(alpha: 0.6),
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'No live placement sessions available',
+                        style: TextStyle(fontSize: 16),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'New opportunities will appear here once announced.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                );
+              }
+        
+              return ListView.separated(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                itemCount: state.sessions.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final session = state.sessions[index];
+                  return _PlacementSessionCard(session: session,student: widget.student,);
+                },
+              );
+            }
+        
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }
@@ -157,7 +159,7 @@ class _PlacementSessionCard extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.08),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.08),
                   shape: BoxShape.circle,
                 ),
                 alignment: Alignment.center,
@@ -260,7 +262,7 @@ class _DriveTypeChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primary.withOpacity(0.08),
+        color: theme.colorScheme.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
@@ -282,11 +284,10 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final color = isLive ? Colors.green : Colors.grey;
     final bgColor = isLive
-        ? Colors.green.withOpacity(0.12)
-        : Colors.grey.withOpacity(0.18);
+        ? Colors.green.withValues(alpha: 0.12)
+        : Colors.grey.withValues(alpha: 0.18);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

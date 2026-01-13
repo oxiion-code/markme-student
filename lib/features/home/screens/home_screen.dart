@@ -70,12 +70,14 @@ class _HomeScreenState extends State<HomeScreen> {
               preferredSize: const Size.fromHeight(70),
               child: HomeAppBar(student: student),
             ),
-            drawer: const HomeSideBar(),
-            body: Column(
-              children: [
-                _collegeBannerWidget(deviceHeight, deviceWidth),
-                _buildSectionNotAllottedUI(deviceHeight),
-              ],
+            drawer: SafeArea(child: const HomeSideBar()),
+            body: SafeArea( 
+              child: Column(
+                children: [
+                  _collegeBannerWidget(deviceHeight, deviceWidth),
+                  _buildSectionNotAllottedUI(deviceHeight),
+                ],
+              ),
             ),
           );
         }
@@ -84,29 +86,31 @@ class _HomeScreenState extends State<HomeScreen> {
             preferredSize: const Size.fromHeight(70),
             child: HomeAppBar(student: student),
           ),
-          drawer: const HomeSideBar(),
-          body: BlocConsumer<ClassBloc, ClassState>(
-            listener: (context, state) {},
-            builder: (context, state) {
-              if (state is ClassLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (state is ClassError) {
-                return Center(child: Text("Error: ${state.message}"));
-              }
-
-              if (state is TodayClassesLoaded) {
-                return _buildClassesUI(
-                  student: student,
-                  classes: state.loadedClasses,
-                  deviceHeight: deviceHeight,
-                  deviceWidth: deviceWidth,
-                );
-              }
-
-              return const SizedBox.shrink();
-            },
+          drawer:SafeArea(child: const HomeSideBar()),
+          body: SafeArea(
+            child: BlocConsumer<ClassBloc, ClassState>(
+              listener: (context, state) {},
+              builder: (context, state) {
+                if (state is ClassLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+            
+                if (state is ClassError) {
+                  return Center(child: Text("Error: ${state.message}"));
+                }
+            
+                if (state is TodayClassesLoaded) {
+                  return _buildClassesUI(
+                    student: student,
+                    classes: state.loadedClasses,
+                    deviceHeight: deviceHeight,
+                    deviceWidth: deviceWidth,
+                  );
+                }
+            
+                return const SizedBox.shrink();
+              },
+            ),
           ),
         );
       },

@@ -184,139 +184,143 @@ class _RegistrationForStudentScreenState
         centerTitle: true,
         elevation: 0,
       ),
-      body: BlocBuilder<OpportunitiesBloc, OpportunitiesState>(
-        builder: (context, state) {
-          // Loading state
-          if (state is OpportunitiesLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: SafeArea(
+        child: SafeArea(
+          child: BlocBuilder<OpportunitiesBloc, OpportunitiesState>(
+            builder: (context, state) {
+              // Loading state
+              if (state is OpportunitiesLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-          // Error state
-          if (state is OpportunitiesError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: Text(
-                      state.message ?? 'Something went wrong',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                    ),
+              // Error state
+              if (state is OpportunitiesError) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Text(
+                          state.message,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
                   ),
-                  const SizedBox(height: 24),
-                ],
-              ),
-            );
-          }
+                );
+              }
 
-          // SUCCESS STATE - Navigate back immediately
-          if (state is SubmittedApplication) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              AppUtils.showCustomSnackBar(context, "Submitted application successfully");
-              context.pop();
-            // Navigate back
-            });
-            return const Center(
-              child: Text("Submitted application successfully"),
-            ); // Show nothing while navigating
-          }
+              // SUCCESS STATE - Navigate back immediately
+              if (state is SubmittedApplication) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  AppUtils.showCustomSnackBar(context, "Submitted application successfully");
+                  context.pop();
+                // Navigate back
+                });
+                return const Center(
+                  child: Text("Submitted application successfully"),
+                ); // Show nothing while navigating
+              }
 
-          // Qualifications loaded state
-          if (state is QualificationsLoaded) {
-            final tenth = _find(state.qualifications, '10th');
-            final twelfth = _find(state.qualifications, '12th');
-            final hasMissingDocs = state.qualifications.any((q) => q.documentUrl == null);
+              // Qualifications loaded state
+              if (state is QualificationsLoaded) {
+                final tenth = _find(state.qualifications, '10th');
+                final twelfth = _find(state.qualifications, '12th');
+                final hasMissingDocs = state.qualifications.any((q) => q.documentUrl == null);
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _PlacementSessionCard(placementSession: widget.placementSession),
-                  const SizedBox(height: 24),
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _PlacementSessionCard(placementSession: widget.placementSession),
+                      const SizedBox(height: 24),
 
-                  if (collegeName.isNotEmpty) ...[
-                    _DeclarationIntro(student: widget.student, collegeName: collegeName),
-                    const SizedBox(height: 24),
-                  ],
+                      if (collegeName.isNotEmpty) ...[
+                        _DeclarationIntro(student: widget.student, collegeName: collegeName),
+                        const SizedBox(height: 24),
+                      ],
 
-                  const _RulesDeclaration(),
-                  const SizedBox(height: 24),
+                      const _RulesDeclaration(),
+                      const SizedBox(height: 24),
 
-                  const _AcademicSectionHeader(),
-                  const SizedBox(height: 16),
-                  ...state.qualifications.map((q) => _QualificationCard(qualification: q)),
-                  const SizedBox(height: 24),
+                      const _AcademicSectionHeader(),
+                      const SizedBox(height: 16),
+                      ...state.qualifications.map((q) => _QualificationCard(qualification: q)),
+                      const SizedBox(height: 24),
 
-                  if (hasMissingDocs || tenth == null || twelfth == null) ...[
-                    Card(
-                      color: Colors.orange[50],
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          children: [
-                            Icon(Icons.warning_amber, color: Colors.orange[700]),
-                            const SizedBox(width: 12),
-                            const Expanded(
-                              child: Text(
-                                'Please upload 10th and 12th certificates before submitting',
-                                style: TextStyle(fontWeight: FontWeight.w500),
-                              ),
+                      if (hasMissingDocs || tenth == null || twelfth == null) ...[
+                        Card(
+                          color: Colors.orange[50],
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              children: [
+                                Icon(Icons.warning_amber, color: Colors.orange[700]),
+                                const SizedBox(width: 12),
+                                const Expanded(
+                                  child: Text(
+                                    'Please upload 10th and 12th certificates before submitting',
+                                    style: TextStyle(fontWeight: FontWeight.w500),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+
+                      _AgreementCheckbox(
+                        value: agreed,
+                        onChanged: (v) => setState(() => agreed = v ?? false),
+                      ),
+                      const SizedBox(height: 24),
+
+                      SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: ElevatedButton(
+                          onPressed: (isSubmitting || !agreed || hasMissingDocs ||
+                              tenth == null || twelfth == null)
+                              ? null
+                              : () => _submitApplication(state),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            elevation: 2,
+                          ),
+                          child: isSubmitting
+                              ? const SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                              : const Text(
+                            'Submit Application',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-
-                  _AgreementCheckbox(
-                    value: agreed,
-                    onChanged: (v) => setState(() => agreed = v ?? false),
+                    ],
                   ),
-                  const SizedBox(height: 24),
+                );
+              }
 
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: (isSubmitting || !agreed || hasMissingDocs ||
-                          tenth == null || twelfth == null)
-                          ? null
-                          : () => _submitApplication(state),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        elevation: 2,
-                      ),
-                      child: isSubmitting
-                          ? const SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                          : const Text(
-                        'Submit Application',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          // Default state
-          return const Center(child: CircularProgressIndicator());
-        },
+              // Default state
+              return const Center(child: CircularProgressIndicator());
+            },
+          ),
+        ),
       ),
     );
   }

@@ -92,7 +92,12 @@ class _SelectCollegeScreenState extends State<SelectCollegeScreen> {
       },
       child: Scaffold(
         bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: EdgeInsets.only(
+            left: 12,
+            right: 12,
+            bottom: MediaQuery.of(context).padding.bottom + 12,
+            top: 12,
+          ),
           child: CustomButton(
             onTap: () async {
               if(selectedCollege==null){
@@ -111,6 +116,7 @@ class _SelectCollegeScreenState extends State<SelectCollegeScreen> {
           ),
         ),
         body: SafeArea(
+          bottom: true,
           child: SingleChildScrollView(
             padding: const EdgeInsets.only(bottom: 20),
             child: Column(

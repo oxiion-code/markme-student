@@ -70,53 +70,55 @@ class _SectionDetailsScreenState extends State<SectionDetailsScreen> {
   Widget _buildSectionDetails(Section section) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          _infoCard(
-            icon: Icons.class_,
-            title: "Section Information",
-            children: [
-              _row("Section Name", section.sectionName),
-              _row("Branch", section.branchId.toUpperCase()),
-            ],
-          ),
-          const SizedBox(height: 16),
+      child: SafeArea(
+        child: Column(
+          children: [
+            _infoCard(
+              icon: Icons.class_,
+              title: "Section Information",
+              children: [
+                _row("Section Name", section.sectionName),
+                _row("Branch", section.branchId.toUpperCase()),
+              ],
+            ),
+            const SizedBox(height: 16),
 
-          _infoCard(
-            icon: Icons.school,
-            title: "Academic Details",
-            children: [
-              _row(
-                "Current Semester",
-                "Semester ${section.currentSemesterNumber}",
-              ),
-              _row("Semester ID", section.currentSemesterId.split("_").join("-").toUpperCase()),
-            ],
-          ),
-          const SizedBox(height: 16),
+            _infoCard(
+              icon: Icons.school,
+              title: "Academic Details",
+              children: [
+                _row(
+                  "Current Semester",
+                  "Semester ${section.currentSemesterNumber}",
+                ),
+                _row("Semester ID", section.currentSemesterId.split("_").join("-").toUpperCase()),
+              ],
+            ),
+            const SizedBox(height: 16),
 
-          _infoCard(
-            icon: Icons.event_seat,
-            title: "Seat Information",
-            children: [
-              _row("Total Seats", section.totalSeatsAllocated.toString()),
-              _row("Available Seats", section.availableSeats.toString()),
-            ],
-          ),
-          const SizedBox(height: 16),
+            _infoCard(
+              icon: Icons.event_seat,
+              title: "Seat Information",
+              children: [
+                _row("Total Seats", section.totalSeatsAllocated.toString()),
+                _row("Available Seats", section.availableSeats.toString()),
+              ],
+            ),
+            const SizedBox(height: 16),
 
-          _infoCard(
-            icon: Icons.meeting_room,
-            title: "Room & Faculty",
-            children: [
-              _row("Default Room", section.defaultRoom!),
-              if(section.hodName!=null)
-              _row("HOD", section.hodName!),
-              if(section.proctorName!=null)
-              _row("Proctor", section.proctorName!),
-            ],
-          ),
-        ],
+            _infoCard(
+              icon: Icons.meeting_room,
+              title: "Room & Faculty",
+              children: [
+                _row("Default Room", section.defaultRoom!),
+                if(section.hodName!=null)
+                _row("HOD", section.hodName!),
+                if(section.proctorName!=null)
+                _row("Proctor", section.proctorName!),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

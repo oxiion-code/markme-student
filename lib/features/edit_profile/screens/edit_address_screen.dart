@@ -96,174 +96,176 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Edit Address")),
-      body: BlocConsumer<EditProfileBloc, EditProfileState>(
-        listener: (context, state) {
-          if (state is EditProfileSuccess) {
-            context.read<StudentCubit>().updateStudent(state.student);
-            Navigator.pop(context, state.student);
-            AppUtils.showCustomSnackBar(
-              context,
-              "Address updated successfully",
-              isError: false,
-            );
-          } else if (state is EditProfileError) {
-            AppUtils.showCustomSnackBar(
-              context,
-              state.message,
-              isError: true,
-            );
-          }
-        },
-        builder: (context, state) {
-          final isLoading = state is EditProfileLoading;
+      body: SafeArea(
+        child: BlocConsumer<EditProfileBloc, EditProfileState>(
+          listener: (context, state) {
+            if (state is EditProfileSuccess) {
+              context.read<StudentCubit>().updateStudent(state.student);
+              Navigator.pop(context, state.student);
+              AppUtils.showCustomSnackBar(
+                context,
+                "Address updated successfully",
+                isError: false,
+              );
+            } else if (state is EditProfileError) {
+              AppUtils.showCustomSnackBar(
+                context,
+                state.message,
+                isError: true,
+              );
+            }
+          },
+          builder: (context, state) {
+            final isLoading = state is EditProfileLoading;
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Normal Address",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  TextFormField(
-                    controller: _atPoController,
-                    decoration: const InputDecoration(
-                      labelText: "At/PO",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (val) =>
-                    val == null || val.isEmpty ? "Enter At/PO" : null,
-                  ),
-                  const SizedBox(height: 12),
-
-                  TextFormField(
-                    controller: _cityVillageController,
-                    decoration: const InputDecoration(
-                      labelText: "City/Village",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (val) =>
-                    val == null || val.isEmpty ? "Enter city/village" : null,
-                  ),
-                  const SizedBox(height: 12),
-
-                  TextFormField(
-                    controller: _distController,
-                    decoration: const InputDecoration(
-                      labelText: "District",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (val) =>
-                    val == null || val.isEmpty ? "Enter district" : null,
-                  ),
-                  const SizedBox(height: 12),
-
-                  TextFormField(
-                    controller: _stateController,
-                    decoration: const InputDecoration(
-                      labelText: "State",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (val) =>
-                    val == null || val.isEmpty ? "Enter state" : null,
-                  ),
-                  const SizedBox(height: 12),
-
-                  TextFormField(
-                    controller: _pinController,
-                    decoration: const InputDecoration(
-                      labelText: "PIN Code",
-                      border: OutlineInputBorder(),
-                    ),
-                    keyboardType: TextInputType.number,
-                    validator: (val) {
-                      if (val == null || val.isEmpty) return "Enter PIN code";
-                      if (!RegExp(r'^\d{6}$').hasMatch(val)) {
-                        return "Enter valid 6-digit PIN";
-                      }
-                      return null;
-                    },
-                  ),
-
-                  const SizedBox(height: 24),
-                  const Text(
-                    "Hostel Address",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  TextFormField(
-                    controller: _hostelController,
-                    decoration: const InputDecoration(
-                      labelText: "Hostel",
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  TextFormField(
-                    controller: _blockController,
-                    decoration: const InputDecoration(
-                      labelText: "Block",
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  TextFormField(
-                    controller: _roomNoController,
-                    decoration: const InputDecoration(
-                      labelText: "Room No",
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () => Navigator.pop(context),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                          ),
-                          child: const Text("Cancel"),
-                        ),
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Normal Address",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed:
-                          isLoading ? null : () => _saveAddress(context),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                          ),
-                          child: isLoading
-                              ? const CircularProgressIndicator(
-                            color: Colors.white,
-                          )
-                              : const Text("Update"),
-                        ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    TextFormField(
+                      controller: _atPoController,
+                      decoration: const InputDecoration(
+                        labelText: "At/PO",
+                        border: OutlineInputBorder(),
                       ),
-                    ],
-                  ),
-                ],
+                      validator: (val) =>
+                      val == null || val.isEmpty ? "Enter At/PO" : null,
+                    ),
+                    const SizedBox(height: 12),
+
+                    TextFormField(
+                      controller: _cityVillageController,
+                      decoration: const InputDecoration(
+                        labelText: "City/Village",
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (val) =>
+                      val == null || val.isEmpty ? "Enter city/village" : null,
+                    ),
+                    const SizedBox(height: 12),
+
+                    TextFormField(
+                      controller: _distController,
+                      decoration: const InputDecoration(
+                        labelText: "District",
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (val) =>
+                      val == null || val.isEmpty ? "Enter district" : null,
+                    ),
+                    const SizedBox(height: 12),
+
+                    TextFormField(
+                      controller: _stateController,
+                      decoration: const InputDecoration(
+                        labelText: "State",
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (val) =>
+                      val == null || val.isEmpty ? "Enter state" : null,
+                    ),
+                    const SizedBox(height: 12),
+
+                    TextFormField(
+                      controller: _pinController,
+                      decoration: const InputDecoration(
+                        labelText: "PIN Code",
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (val) {
+                        if (val == null || val.isEmpty) return "Enter PIN code";
+                        if (!RegExp(r'^\d{6}$').hasMatch(val)) {
+                          return "Enter valid 6-digit PIN";
+                        }
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 24),
+                    const Text(
+                      "Hostel Address",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    TextFormField(
+                      controller: _hostelController,
+                      decoration: const InputDecoration(
+                        labelText: "Hostel",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    TextFormField(
+                      controller: _blockController,
+                      decoration: const InputDecoration(
+                        labelText: "Block",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    TextFormField(
+                      controller: _roomNoController,
+                      decoration: const InputDecoration(
+                        labelText: "Room No",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                            child: const Text("Cancel"),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed:
+                            isLoading ? null : () => _saveAddress(context),
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                            child: isLoading
+                                ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                                : const Text("Update"),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

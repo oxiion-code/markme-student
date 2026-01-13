@@ -105,142 +105,144 @@ class _EditPersonalDetailsScreenState extends State<EditPersonalDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Edit Personal Details")),
-      body: BlocConsumer<EditProfileBloc, EditProfileState>(
-        listener: (context, state) {
-          if (state is EditProfileSuccess) {
-            Navigator.pop(context, state.student);
-            context.read<StudentCubit>().updateStudent(state.student);
-            AppUtils.showCustomSnackBar(context, "Profile updated successfully",isError: false);
-          } else if (state is EditProfileError) {
-            AppUtils.showCustomSnackBar(context, state.message,isError: true);
-          }
-        },
-        builder: (context, state) {
-          final isLoading = state is EditProfileLoading;
-
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  // Profile Image
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundImage: _selectedImage != null
-                          ? FileImage(_selectedImage!)
-                          : NetworkImage(widget.student.profilePhotoUrl)
-                      as ImageProvider,
-                      child: Align(
-                        alignment: Alignment.bottomRight,
-                        child: CircleAvatar(
-                          radius: 18,
-                          backgroundColor: Colors.blue,
-                          child: const Icon(Icons.edit,
-                              color: Colors.white, size: 18),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Name
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: "Name",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (val) =>
-                    val == null || val.isEmpty ? "Enter name" : null,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Email
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: "Email",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (val) =>
-                    val == null || val.isEmpty ? "Enter email" : null,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // DOB
-                  TextFormField(
-                    controller: _dobController,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      labelText: "Date of Birth",
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.calendar_today),
-                        onPressed: _pickDate,
-                      ),
-                    ),
-                    validator: (val) => val == null || val.isEmpty
-                        ? "Select date of birth"
-                        : null,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Gender
-                  DropdownButtonFormField<String>(
-                    value: _gender.isNotEmpty ? _gender : null,
-                    decoration: const InputDecoration(
-                      labelText: "Gender",
-                      border: OutlineInputBorder(),
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: "Male", child: Text("Male")),
-                      DropdownMenuItem(value: "Female", child: Text("Female")),
-                      DropdownMenuItem(value: "Other", child: Text("Other")),
-                    ],
-                    onChanged: (val) => setState(() => _gender = val ?? ""),
-                    validator: (val) =>
-                    val == null || val.isEmpty ? "Select gender" : null,
-                  ),
-                  const SizedBox(height: 30),
-
-                  // Buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () => Navigator.pop(context),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+      body: SafeArea(
+        child: BlocConsumer<EditProfileBloc, EditProfileState>(
+          listener: (context, state) {
+            if (state is EditProfileSuccess) {
+              Navigator.pop(context, state.student);
+              context.read<StudentCubit>().updateStudent(state.student);
+              AppUtils.showCustomSnackBar(context, "Profile updated successfully",isError: false);
+            } else if (state is EditProfileError) {
+              AppUtils.showCustomSnackBar(context, state.message,isError: true);
+            }
+          },
+          builder: (context, state) {
+            final isLoading = state is EditProfileLoading;
+        
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    // Profile Image
+                    GestureDetector(
+                      onTap: _pickImage,
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage: _selectedImage != null
+                            ? FileImage(_selectedImage!)
+                            : NetworkImage(widget.student.profilePhotoUrl)
+                        as ImageProvider,
+                        child: Align(
+                          alignment: Alignment.bottomRight,
+                          child: CircleAvatar(
+                            radius: 18,
+                            backgroundColor: Colors.blue,
+                            child: const Icon(Icons.edit,
+                                color: Colors.white, size: 18),
                           ),
-                          child: const Text("Cancel"),
                         ),
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () => _saveDetails(context),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    const SizedBox(height: 20),
+        
+                    // Name
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(
+                        labelText: "Name",
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (val) =>
+                      val == null || val.isEmpty ? "Enter name" : null,
+                    ),
+                    const SizedBox(height: 16),
+        
+                    // Email
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                        labelText: "Email",
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (val) =>
+                      val == null || val.isEmpty ? "Enter email" : null,
+                    ),
+                    const SizedBox(height: 16),
+        
+                    // DOB
+                    TextFormField(
+                      controller: _dobController,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        labelText: "Date of Birth",
+                        border: const OutlineInputBorder(),
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.calendar_today),
+                          onPressed: _pickDate,
+                        ),
+                      ),
+                      validator: (val) => val == null || val.isEmpty
+                          ? "Select date of birth"
+                          : null,
+                    ),
+                    const SizedBox(height: 16),
+        
+                    // Gender
+                    DropdownButtonFormField<String>(
+                      value: _gender.isNotEmpty ? _gender : null,
+                      decoration: const InputDecoration(
+                        labelText: "Gender",
+                        border: OutlineInputBorder(),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: "Male", child: Text("Male")),
+                        DropdownMenuItem(value: "Female", child: Text("Female")),
+                        DropdownMenuItem(value: "Other", child: Text("Other")),
+                      ],
+                      onChanged: (val) => setState(() => _gender = val ?? ""),
+                      validator: (val) =>
+                      val == null || val.isEmpty ? "Select gender" : null,
+                    ),
+                    const SizedBox(height: 30),
+        
+                    // Buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                            child: const Text("Cancel"),
                           ),
-                          child: isLoading
-                              ? const CircularProgressIndicator(
-                              color: Colors.white)
-                              : const Text("Update"),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: isLoading
+                                ? null
+                                : () => _saveDetails(context),
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                            child: isLoading
+                                ? const CircularProgressIndicator(
+                                color: Colors.white)
+                                : const Text("Update"),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

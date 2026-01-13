@@ -89,117 +89,119 @@ class _EditParentDetailsScreenState extends State<EditParentDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Edit Parent Details")),
-      body: BlocConsumer<EditProfileBloc, EditProfileState>(
-        listener: (context, state) {
-          if (state is EditProfileSuccess) {
-            context.read<StudentCubit>().updateStudent(state.student);
-            Navigator.pop(context, state.student);
-            AppUtils.showCustomSnackBar(
-              context,
-              "Parent details updated successfully",
-              isError: false,
-            );
-          } else if (state is EditProfileError) {
-            AppUtils.showCustomSnackBar(
-              context,
-              state.message,
-              isError: true,
-            );
-          }
-        },
-        builder: (context, state) {
-          final isLoading = state is EditProfileLoading;
-
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  // Father Name
-                  TextFormField(
-                    controller: _fatherNameController,
-                    decoration: const InputDecoration(
-                      labelText: "Father's Name",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (val) =>
-                    val == null || val.isEmpty ? "Enter father's name" : null,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Father Phone
-                  TextFormField(
-                    controller: _fatherPhoneController,
-                    decoration: const InputDecoration(
-                      labelText: "Father's Phone Number (with country code)",
-                      border: OutlineInputBorder(),
-                    ),
-                    keyboardType: TextInputType.phone,
-                    validator: (val) => _validatePhone(val, "father"),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Mother Name
-                  TextFormField(
-                    controller: _motherNameController,
-                    decoration: const InputDecoration(
-                      labelText: "Mother's Name",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (val) =>
-                    val == null || val.isEmpty ? "Enter mother's name" : null,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Mother Phone
-                  TextFormField(
-                    controller: _motherPhoneController,
-                    decoration: const InputDecoration(
-                      labelText: "Mother's Phone Number (with country code)",
-                      border: OutlineInputBorder(),
-                    ),
-                    keyboardType: TextInputType.phone,
-                    validator: (val) => _validatePhone(val, "mother"),
-                  ),
-                  const SizedBox(height: 30),
-
-                  // Buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () => Navigator.pop(context),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                          ),
-                          child: const Text("Cancel"),
-                        ),
+      body: SafeArea(
+        child: BlocConsumer<EditProfileBloc, EditProfileState>(
+          listener: (context, state) {
+            if (state is EditProfileSuccess) {
+              context.read<StudentCubit>().updateStudent(state.student);
+              Navigator.pop(context, state.student);
+              AppUtils.showCustomSnackBar(
+                context,
+                "Parent details updated successfully",
+                isError: false,
+              );
+            } else if (state is EditProfileError) {
+              AppUtils.showCustomSnackBar(
+                context,
+                state.message,
+                isError: true,
+              );
+            }
+          },
+          builder: (context, state) {
+            final isLoading = state is EditProfileLoading;
+        
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    // Father Name
+                    TextFormField(
+                      controller: _fatherNameController,
+                      decoration: const InputDecoration(
+                        labelText: "Father's Name",
+                        border: OutlineInputBorder(),
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () => _saveParentDetails(context),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                          ),
-                          child: isLoading
-                              ? const CircularProgressIndicator(
-                            color: Colors.white,
-                          )
-                              : const Text("Update"),
-                        ),
+                      validator: (val) =>
+                      val == null || val.isEmpty ? "Enter father's name" : null,
+                    ),
+                    const SizedBox(height: 16),
+        
+                    // Father Phone
+                    TextFormField(
+                      controller: _fatherPhoneController,
+                      decoration: const InputDecoration(
+                        labelText: "Father's Phone Number (with country code)",
+                        border: OutlineInputBorder(),
                       ),
-                    ],
-                  ),
-                ],
+                      keyboardType: TextInputType.phone,
+                      validator: (val) => _validatePhone(val, "father"),
+                    ),
+                    const SizedBox(height: 16),
+        
+                    // Mother Name
+                    TextFormField(
+                      controller: _motherNameController,
+                      decoration: const InputDecoration(
+                        labelText: "Mother's Name",
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (val) =>
+                      val == null || val.isEmpty ? "Enter mother's name" : null,
+                    ),
+                    const SizedBox(height: 16),
+        
+                    // Mother Phone
+                    TextFormField(
+                      controller: _motherPhoneController,
+                      decoration: const InputDecoration(
+                        labelText: "Mother's Phone Number (with country code)",
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.phone,
+                      validator: (val) => _validatePhone(val, "mother"),
+                    ),
+                    const SizedBox(height: 30),
+        
+                    // Buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                            child: const Text("Cancel"),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: isLoading
+                                ? null
+                                : () => _saveParentDetails(context),
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                            child: isLoading
+                                ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                                : const Text("Update"),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

@@ -282,25 +282,27 @@ class _StudentFormStepperState extends State<StudentFormStepper> {
                 context.go("/home", extra: state.student);
               }
             },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Step ${_currentStep + 1} of ${steps.length}",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Step ${_currentStep + 1} of ${steps.length}",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  LinearProgressIndicator(
-                    value: (_currentStep + 1) / steps.length,
-                    backgroundColor: Colors.grey[300],
-                    valueColor: const AlwaysStoppedAnimation(Colors.green),
-                  ),
-                ],
+                    const SizedBox(height: 4),
+                    LinearProgressIndicator(
+                      value: (_currentStep + 1) / steps.length,
+                      backgroundColor: Colors.grey[300],
+                      valueColor: const AlwaysStoppedAnimation(Colors.green),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

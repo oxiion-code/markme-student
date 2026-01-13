@@ -6,7 +6,6 @@ import 'package:markme_student/core/utils/app_utils.dart';
 import 'package:markme_student/features/auth/bloc/auth_bloc.dart';
 import 'package:markme_student/features/auth/bloc/auth_event.dart';
 import 'package:markme_student/features/auth/bloc/auth_state.dart';
-import 'package:markme_student/features/student/models/student.dart';
 import 'package:markme_student/features/student/models/student_cubit.dart';
 
 class SettingOptionsScreen extends StatelessWidget {
@@ -100,85 +99,87 @@ class SettingOptionsScreen extends StatelessWidget {
                 backgroundColor: Colors.white,
                 iconTheme: const IconThemeData(color: Colors.black87),
               ),
-              body: Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: Column(
-                  children: [
-                    Card(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                      elevation: 3,
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          radius: 22,
-                          backgroundColor: Colors.red[100],
-                          child: const Icon(Icons.logout, color: Colors.red, size: 28),
-                        ),
-                        title: const Text(
-                          "Logout",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Colors.red,
-                            fontSize: 18,
+              body: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Column(
+                    children: [
+                      Card(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                        elevation: 3,
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            radius: 22,
+                            backgroundColor: Colors.red[100],
+                            child: const Icon(Icons.logout, color: Colors.red, size: 28),
                           ),
-                        ),
-                        subtitle: const Text(
-                          "Sign out from your account",
-                          style: TextStyle(fontSize: 14, color: Colors.redAccent),
-                        ),
-                        onTap: isLoading ? null : () => _confirmLogout(context),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Card(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                      elevation: 3,
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          radius: 22,
-                          backgroundColor: Colors.green[100],
-                          child: const Icon(Icons.people_alt, color: Colors.green, size: 28),
-                        ),
-                        title: const Text(
-                          "Change section",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Colors.green,
-                            fontSize: 18,
+                          title: const Text(
+                            "Logout",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.red,
+                              fontSize: 18,
+                            ),
                           ),
-                        ),
-                        subtitle: const Text(
-                          "Change your current section",
-                          style: TextStyle(fontSize: 14, color: Colors.green),
-                        ),
-                        onTap: () => context.push("/changeSection"),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Card(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                      elevation: 3,
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          radius: 22,
-                          backgroundColor: Colors.blue[100],
-                          child: const Icon(Icons.developer_mode, color: Colors.blue, size: 28),
-                        ),
-                        title: const Text(
-                          "Developer Details",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Colors.blue,
-                            fontSize: 18,
+                          subtitle: const Text(
+                            "Sign out from your account",
+                            style: TextStyle(fontSize: 14, color: Colors.redAccent),
                           ),
+                          onTap: isLoading ? null : () => _confirmLogout(context),
                         ),
-                        subtitle: const Text(
-                          "View developer contact information",
-                          style: TextStyle(fontSize: 14, color: Colors.black54),
-                        ),
-                        onTap: () => context.push("/developerDetails"),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      Card(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                        elevation: 3,
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            radius: 22,
+                            backgroundColor: Colors.green[100],
+                            child: const Icon(Icons.people_alt, color: Colors.green, size: 28),
+                          ),
+                          title: const Text(
+                            "Change section",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.green,
+                              fontSize: 18,
+                            ),
+                          ),
+                          subtitle: const Text(
+                            "Change your current section",
+                            style: TextStyle(fontSize: 14, color: Colors.green),
+                          ),
+                          onTap: () => context.push("/changeSection"),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Card(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                        elevation: 3,
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            radius: 22,
+                            backgroundColor: Colors.blue[100],
+                            child: const Icon(Icons.developer_mode, color: Colors.blue, size: 28),
+                          ),
+                          title: const Text(
+                            "Developer Details",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.blue,
+                              fontSize: 18,
+                            ),
+                          ),
+                          subtitle: const Text(
+                            "View developer contact information",
+                            style: TextStyle(fontSize: 14, color: Colors.black54),
+                          ),
+                          onTap: () => context.push("/developerDetails"),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

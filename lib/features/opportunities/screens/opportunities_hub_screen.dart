@@ -37,112 +37,114 @@ class _OpportunitiesHubScreenState extends State<OpportunitiesHubScreen> {
         ),
         elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Explore Section
-            Text(
-              'Explore your opportunities',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.onBackground,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Explore Section
+              Text(
+                'Explore your opportunities',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.primaryContainer ,
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Swipe to explore options',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 250,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: opportunities.length,
-                separatorBuilder: (context, index) => const SizedBox(width: 16),
-                itemBuilder: (context, index) {
-                  final opportunity = opportunities[index];
-                  return OpportunityCard(
-                    icon: opportunity['icon'] as IconData,
-                    title: opportunity['title'] as String,
-                    subtitle: opportunity['subtitle'] as String,
-                    route: opportunity['route'] as String,
-                    student: widget.student,
-                  );
-                },
+              const SizedBox(height: 24),
+              const Text(
+                'Swipe to explore options',
+                style: TextStyle(fontSize: 14, color: Colors.grey),
               ),
-            ),
-            const SizedBox(height: 32),
-
-            // Applied Opportunities Section
-            Text(
-              'Applied opportunities',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.onBackground,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // BLoC Builder for Applied Applications
-            Expanded(
-              child: BlocBuilder<OpportunitiesBloc, OpportunitiesState>(
-                builder: (context, state) {
-                  if (state is OpportunitiesLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 250,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: opportunities.length,
+                  separatorBuilder: (context, index) => const SizedBox(width: 16),
+                  itemBuilder: (context, index) {
+                    final opportunity = opportunities[index];
+                    return OpportunityCard(
+                      icon: opportunity['icon'] as IconData,
+                      title: opportunity['title'] as String,
+                      subtitle: opportunity['subtitle'] as String,
+                      route: opportunity['route'] as String,
+                      student: widget.student,
                     );
-                  } else if (state is AppliedFormsLoaded) {
-                    if (state.applications.isEmpty) {
-                      return _buildEmptyApplications();
+                  },
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // Applied Opportunities Section
+              Text(
+                'Applied opportunities',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.primaryFixedDim,
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // BLoC Builder for Applied Applications
+              Expanded(
+                child: BlocBuilder<OpportunitiesBloc, OpportunitiesState>(
+                  builder: (context, state) {
+                    if (state is OpportunitiesLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (state is AppliedFormsLoaded) {
+                      if (state.applications.isEmpty) {
+                        return _buildEmptyApplications();
+                      }
+                      return ListView.separated(
+                        itemCount: state.applications.length,
+                        separatorBuilder: (context, index) => const SizedBox(height: 12),
+                        itemBuilder: (context, index) {
+                          final application = state.applications[index];
+                          return AppliedOpportunityCard(
+                            application: application,
+                            student: widget.student,
+                          );
+                        },
+                      );
+                    } else if (state is OpportunitiesError) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              size: 64,
+                              color: Colors.grey[400],
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              state.message,
+                              style: TextStyle(color: Colors.grey[600]),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () {
+                                context.read<OpportunitiesBloc>().add(
+                                  LoadAppliedFormsEvent(studentId: widget.student.id),
+                                );
+                              },
+                              child: const Text('Retry'),
+                            ),
+                          ],
+                        ),
+                      );
                     }
-                    return ListView.separated(
-                      itemCount: state.applications.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        final application = state.applications[index];
-                        return AppliedOpportunityCard(
-                          application: application,
-                          student: widget.student,
-                        );
-                      },
-                    );
-                  } else if (state is OpportunitiesError) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.error_outline,
-                            size: 64,
-                            color: Colors.grey[400],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            state.message,
-                            style: TextStyle(color: Colors.grey[600]),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () {
-                              context.read<OpportunitiesBloc>().add(
-                                LoadAppliedFormsEvent(studentId: widget.student.id),
-                              );
-                            },
-                            child: const Text('Retry'),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                  return _buildEmptyApplications();
-                },
+                    return _buildEmptyApplications();
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -163,7 +165,7 @@ class _OpportunitiesHubScreenState extends State<OpportunitiesHubScreen> {
             'No applications yet',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onBackground,
+              color: Theme.of(context).colorScheme.onSecondary,
             ),
           ),
           const SizedBox(height: 8),
@@ -247,7 +249,7 @@ class OpportunityCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -259,7 +261,7 @@ class OpportunityCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
@@ -333,16 +335,6 @@ class AppliedOpportunityCard extends StatelessWidget {
     }
   }
 
-  /// ✅ Withdraw allowed only within 2 hours
-  bool _canWithdraw() {
-    try {
-      final appliedTime = DateTime.parse(application.appliedAt);
-      final now = DateTime.now();
-      return now.difference(appliedTime).inHours < 2;
-    } catch (_) {
-      return false;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -353,7 +345,7 @@ class AppliedOpportunityCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -365,7 +357,7 @@ class AppliedOpportunityCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: _getStatusColor().withOpacity(0.1),
+              color: _getStatusColor().withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
@@ -443,7 +435,7 @@ class AppliedOpportunityCard extends StatelessWidget {
               }
             },
             itemBuilder: (context) => [
-              if (application.status == 'applied' && _canWithdraw())
+              if (application.status == 'applied')
                 const PopupMenuItem(
                   value: 'withdraw',
                   child: Row(

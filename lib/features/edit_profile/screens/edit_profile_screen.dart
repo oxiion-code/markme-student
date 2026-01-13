@@ -31,65 +31,67 @@ class EditProfileOptionsScreen extends StatelessWidget {
             backgroundColor: Colors.blue.shade50,
             elevation: 0,
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                _buildOptionCard(
-                  context,
-                  title: "Change Personal Details",
-                  subtitle: "Name, DOB, Email, Gender, Photo",
-                  icon: CupertinoIcons.person_alt_circle,
-                  color: Colors.blueAccent,
-                  onClick: () {
-                    context.push('/editPersonalDetail', extra: student);
-                  },
-                ),
-                const SizedBox(height: 12),
-                _buildOptionCard(
-                  context,
-                  title: "Change Parent Details",
-                  subtitle: "Phone Number, Name",
-                  icon: CupertinoIcons.person_2_alt,
-                  color: Colors.orangeAccent,
-                  onClick: () {
-                    context.push('/editParentDetail', extra: student);
-                  },
-                ),
-                const SizedBox(height: 12),
-                _buildOptionCard(
-                  context,
-                  title: "Change Address",
-                  subtitle: "Hostel Address, Permanent Address",
-                  icon: MaterialCommunityIcons.home,
-                  color: Colors.green,
-                  onClick: () {
-                    context.push('/editAddressDetail', extra: student);
-                  },
-                ),
-                const SizedBox(height: 12),
-                _buildOptionCard(
-                  context,
-                  title: "Update Roll/Reg. No",
-                  subtitle: "Change Roll or Reg. Number",
-                  icon: MaterialCommunityIcons.format_list_numbered,
-                  color: Colors.pink,
-                  onClick: () {
-                    context.push('/update-roll-reg-no', extra: student);
-                  },
-                ),
-                const SizedBox(height: 12),
-                _buildOptionCard(
-                  context,
-                  title: "Section Details",
-                  subtitle: "Review your section details",
-                  icon: MaterialCommunityIcons.details,
-                  color: Colors.brown,
-                  onClick: () {
-                    context.push('/section-details', extra: student.sectionId);
-                  },
-                ),
-              ],
+          body: SafeArea( 
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  _buildOptionCard(
+                    context,
+                    title: "Change Personal Details",
+                    subtitle: "Name, DOB, Email, Gender, Photo",
+                    icon: CupertinoIcons.person_alt_circle,
+                    color: Colors.blueAccent,
+                    onClick: () {
+                      context.push('/editPersonalDetail', extra: student);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _buildOptionCard(
+                    context,
+                    title: "Change Parent Details",
+                    subtitle: "Phone Number, Name",
+                    icon: CupertinoIcons.person_2_alt,
+                    color: Colors.orangeAccent,
+                    onClick: () {
+                      context.push('/editParentDetail', extra: student);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _buildOptionCard(
+                    context,
+                    title: "Change Address",
+                    subtitle: "Hostel Address, Permanent Address",
+                    icon: MaterialCommunityIcons.home,
+                    color: Colors.green,
+                    onClick: () {
+                      context.push('/editAddressDetail', extra: student);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _buildOptionCard(
+                    context,
+                    title: "Update Roll/Reg. No",
+                    subtitle: "Change Roll or Reg. Number",
+                    icon: MaterialCommunityIcons.format_list_numbered,
+                    color: Colors.pink,
+                    onClick: () {
+                      context.push('/update-roll-reg-no', extra: student);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _buildOptionCard(
+                    context,
+                    title: "Section Details",
+                    subtitle: "Review your section details",
+                    icon: MaterialCommunityIcons.details,
+                    color: Colors.brown,
+                    onClick: () {
+                      context.push('/section-details', extra: student.sectionId);
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         );

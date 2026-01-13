@@ -107,46 +107,44 @@ class AuthRepositoryImpl extends AuthRepository {
       await firebaseAuth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         timeout: const Duration(seconds: 60),
+
+        // ✅ DO NOT SIGN IN HERE
         verificationCompleted: (PhoneAuthCredential credential) async {
-          try {
-            await firebaseAuth.signInWithCredential(credential);
-            // Auto verification handled, no need to complete completer here
-          } catch (e) {
-            //failed
-          }
+          // Leave empty or log only
         },
+
         verificationFailed: (FirebaseAuthException e) {
-          // Firebase-specific errors
-          String message;
-          switch (e.code) {
-            case 'invalid-phone-number':
-              message = "The phone number entered is invalid";
-              break;
-            case 'quota-exceeded':
-              message = "SMS quota exceeded. Try again later";
-              break;
-            default:
-              message = e.message ?? "OTP sending failed";
+          if (!completer.isCompleted) {
+            String message;
+            switch (e.code) {
+              case 'invalid-phone-number':
+                message = "The phone number entered is invalid";
+                break;
+              case 'quota-exceeded':
+                message = "SMS quota exceeded. Try again later";
+                break;
+              default:
+                message = e.message ?? "OTP sending failed";
+            }
+            completer.complete(Left(AppFailure(message: message)));
           }
-          completer.complete(Left(AppFailure(message: message)));
         },
+
         codeSent: (String verificationId, int? resendToken) {
-          completer.complete(Right(verificationId));
+          if (!completer.isCompleted) {
+            completer.complete(Right(verificationId));
+          }
         },
-        codeAutoRetrievalTimeout: (String verificationId) {},
+
+        codeAutoRetrievalTimeout: (_) {},
       );
 
       return completer.future;
-    } on FirebaseAuthException catch (e) {
-      return Left(AppFailure(message: "Firebase error: ${e.message}"));
-    } on TimeoutException {
-      return Left(
-        AppFailure(message: "OTP request timed out. Please try again."),
-      );
     } catch (e) {
-      return Left(AppFailure(message: "Unexpected error: ${e.toString()}"));
+      return Left(AppFailure(message: e.toString()));
     }
   }
+
 
   //verify the otp
   @override

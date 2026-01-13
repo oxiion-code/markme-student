@@ -65,192 +65,194 @@ class _ProfileVerificationScreenState extends State<ProfileVerificationScreen> {
           title: const Text('Profile Verification'),
           centerTitle: true,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Complete your profile verification',
-                style: theme.textTheme.titleMedium,
-              ),
-              const SizedBox(height: 16),
-              _VerificationOptionCard(
-                icon: Icons.verified_user,
-                title: 'Document Verification',
-                subtitle: 'Upload and verify your identity documents',
-                onTap: () {
-                  if (profileVerificationStatus == "verified") {
-                    AppUtils.showCustomSnackBar(
-                      context,
-                      "Documents are already verified",
-                    );
-                  } else if (profileVerificationStatus == "both_uploaded") {
-                    AppUtils.showCustomSnackBar(
-                      context,
-                      "Documents are uploaded but not verified yet",
-                    );
-                  } else if(profileVerificationStatus == "d_uploaded" ){
-                    AppUtils.showCustomSnackBar(
-                      context,
-                      "Provide qualification details to start verification",isError: true
-                    );
-                  }else {
-                    context
-                        .push(
-                          '/document-verification',
-                          extra: widget.student.id,
-                        )
-                        .then((response) {
-                          if (response == "uploaded") {
-                            context.read<ProfileVerificationBloc>().add(
-                              CheckAccountVerificationStatus(
-                                collegeId: collegeId,
-                                studentId: widget.student.id,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Complete your profile verification',
+                  style: theme.textTheme.titleMedium,
+                ),
+                const SizedBox(height: 16),
+                _VerificationOptionCard(
+                  icon: Icons.verified_user,
+                  title: 'Document Verification',
+                  subtitle: 'Upload and verify your identity documents',
+                  onTap: () {
+                    if (profileVerificationStatus == "verified") {
+                      AppUtils.showCustomSnackBar(
+                        context,
+                        "Documents are already verified",
+                      );
+                    } else if (profileVerificationStatus == "both_uploaded") {
+                      AppUtils.showCustomSnackBar(
+                        context,
+                        "Documents are uploaded but not verified yet",
+                      );
+                    } else if(profileVerificationStatus == "d_uploaded" ){
+                      AppUtils.showCustomSnackBar(
+                        context,
+                        "Provide qualification details to start verification",isError: true
+                      );
+                    }else {
+                      context
+                          .push(
+                            '/document-verification',
+                            extra: widget.student.id,
+                          )
+                          .then((response) {
+                            if (response == "uploaded") {
+                              context.read<ProfileVerificationBloc>().add(
+                                CheckAccountVerificationStatus(
+                                  collegeId: collegeId,
+                                  studentId: widget.student.id,
+                                ),
+                              );
+                            }
+                          });
+                    }
+                  },
+                ),
+                const SizedBox(height: 12),
+                _VerificationOptionCard(
+                  icon: Icons.school,
+                  title: 'Qualification Details',
+                  subtitle: 'Give complete academic qualification details',
+                  onTap: () {
+                    if (profileVerificationStatus == "verified") {
+                      AppUtils.showCustomSnackBar(
+                        context,
+                        "Qualification details are already verified",
+                      );
+                    } else if (profileVerificationStatus == "e_uploaded" ||
+                        profileVerificationStatus == "both_uploaded") {
+                      AppUtils.showCustomSnackBar(
+                        context,
+                        "Qualification details are uploaded but not verified yet",
+                      );
+                    } else if (profileVerificationStatus == "d_uploaded") {
+                      context
+                          .push(
+                            "/qualification-details",
+                            extra: widget.student.id,
+                          )
+                          .then((response) {
+                            if (response == "uploaded") {
+                              context.read<ProfileVerificationBloc>().add(
+                                CheckAccountVerificationStatus(
+                                  collegeId: collegeId,
+                                  studentId: widget.student.id,
+                                ),
+                              );
+                            }
+                          });
+                    } else {
+                      AppUtils.showCustomSnackBar(
+                        context,
+                        "Upload the documents first",
+                        isError: true,
+                      );
+                    }
+                  },
+                ),
+                const SizedBox(height: 18),
+                if(profileVerificationStatus=="verified")...[
+                  Card(
+                    color: Colors.green.shade50,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(color: Colors.green.shade300),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.verified_rounded,
+                            color: Colors.green.shade700,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'Your account is already verified \nFor any changes contact admin',
+                              style: TextStyle(
+                                color: Colors.green.shade800,
+                                fontWeight: FontWeight.w600,
                               ),
-                            );
-                          }
-                        });
-                  }
-                },
-              ),
-              const SizedBox(height: 12),
-              _VerificationOptionCard(
-                icon: Icons.school,
-                title: 'Qualification Details',
-                subtitle: 'Give complete academic qualification details',
-                onTap: () {
-                  if (profileVerificationStatus == "verified") {
-                    AppUtils.showCustomSnackBar(
-                      context,
-                      "Qualification details are already verified",
-                    );
-                  } else if (profileVerificationStatus == "e_uploaded" ||
-                      profileVerificationStatus == "both_uploaded") {
-                    AppUtils.showCustomSnackBar(
-                      context,
-                      "Qualification details are uploaded but not verified yet",
-                    );
-                  } else if (profileVerificationStatus == "d_uploaded") {
-                    context
-                        .push(
-                          "/qualification-details",
-                          extra: widget.student.id,
-                        )
-                        .then((response) {
-                          if (response == "uploaded") {
-                            context.read<ProfileVerificationBloc>().add(
-                              CheckAccountVerificationStatus(
-                                collegeId: collegeId,
-                                studentId: widget.student.id,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+                if(profileVerificationStatus=="both_uploaded")...[
+                  Card(
+                    color: Colors.orange.shade50,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(color: Colors.yellow.shade300),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.verified_rounded,
+                            color: Colors.brown.shade700,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'Your profile verification is currently in progress.\nPlease contact the admin for any changes.',
+                              style: TextStyle(
+                                color: Colors.yellow.shade800,
+                                fontWeight: FontWeight.w600,
                               ),
-                            );
-                          }
-                        });
-                  } else {
-                    AppUtils.showCustomSnackBar(
-                      context,
-                      "Upload the documents first",
-                      isError: true,
-                    );
-                  }
-                },
-              ),
-              const SizedBox(height: 18),
-              if(profileVerificationStatus=="verified")...[
-                Card(
-                  color: Colors.green.shade50,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.green.shade300),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.verified_rounded,
-                          color: Colors.green.shade700,
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            'Your account is already verified \nFor any changes contact admin',
-                            style: TextStyle(
-                              color: Colors.green.shade800,
-                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                )
+                  )
+                ],
+                if(profileVerificationStatus.contains("failed"))...[
+                  Card(
+                    color: Colors.orange.shade50,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(color: Colors.yellow.shade300),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.error,
+                            color: Colors.brown.shade700,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              "$profileVerificationStatus. Upload all the information again and apply for reverification within 4 days.",
+                              style: TextStyle(
+                                color: Colors.yellow.shade800,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ]
               ],
-              if(profileVerificationStatus=="both_uploaded")...[
-                Card(
-                  color: Colors.orange.shade50,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.yellow.shade300),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.verified_rounded,
-                          color: Colors.brown.shade700,
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            'Your profile verification is currently in progress.\nPlease contact the admin for any changes.',
-                            style: TextStyle(
-                              color: Colors.yellow.shade800,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              ],
-              if(profileVerificationStatus.contains("failed"))...[
-                Card(
-                  color: Colors.orange.shade50,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.yellow.shade300),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.error,
-                          color: Colors.brown.shade700,
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            "$profileVerificationStatus. Upload all the information again and apply for reverification within 4 days.",
-                            style: TextStyle(
-                              color: Colors.yellow.shade800,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              ]
-            ],
+            ),
           ),
         ),
       ),

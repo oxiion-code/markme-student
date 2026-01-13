@@ -116,51 +116,63 @@ class _DocumentVerificationScreenState
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _header(),
-              const SizedBox(height: 32),
-              const Text(
-                'Required Documents',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-
-              /// 📂 Document cards
-              ...documents.entries.map(
-                    (entry) => DocumentUploadCard(
-                  documentName: entry.key,
-                  documentData: entry.value,
-                  onUpload: (fileName, filePath) {
-                    setState(() {
-                      documents[entry.key]!['status'] = 'uploaded';
-                      documents[entry.key]!['fileName'] = fileName;
-                      documents[entry.key]!['filePath'] = filePath;
-                    });
-                  },
-                  onRemove: () {
-                    setState(() {
-                      documents[entry.key]!['status'] = 'not_uploaded';
-                      documents[entry.key]!['fileName'] = null;
-                      documents[entry.key]!['filePath'] = null;
-                    });
-                  },
-                  onReplace: (fileName, filePath) {
-                    setState(() {
-                      documents[entry.key]!['fileName'] = fileName;
-                      documents[entry.key]!['filePath'] = filePath;
-                    });
-                  },
+        body: SafeArea(
+          bottom: true,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _header(),
+                const SizedBox(height: 32),
+                const Text(
+                  'Required Documents',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
-              ),
-              const SizedBox(height: 120),
-            ],
+                const SizedBox(height: 20),
+          
+                /// 📂 Document cards
+                ...documents.entries.map(
+                      (entry) => DocumentUploadCard(
+                    documentName: entry.key,
+                    documentData: entry.value,
+                    onUpload: (fileName, filePath) {
+                      setState(() {
+                        documents[entry.key]!['status'] = 'uploaded';
+                        documents[entry.key]!['fileName'] = fileName;
+                        documents[entry.key]!['filePath'] = filePath;
+                      });
+                    },
+                    onRemove: () {
+                      setState(() {
+                        documents[entry.key]!['status'] = 'not_uploaded';
+                        documents[entry.key]!['fileName'] = null;
+                        documents[entry.key]!['filePath'] = null;
+                      });
+                    },
+                    onReplace: (fileName, filePath) {
+                      setState(() {
+                        documents[entry.key]!['fileName'] = fileName;
+                        documents[entry.key]!['filePath'] = filePath;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 120),
+              ],
+            ),
           ),
         ),
-        bottomSheet: _submitButton(),
+        bottomSheet: Padding(
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            bottom: MediaQuery.of(context).padding.bottom + 16,
+            top: 12,
+          ),
+          child: _submitButton(),
+        ),
+
       ),
     );
   }

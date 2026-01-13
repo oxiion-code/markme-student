@@ -184,42 +184,44 @@ class _UpdateStudentRegOrRollNoScreenState
       },
       child: Scaffold(
         appBar: AppBar(title: const Text('Update Student Details')),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: _rollController,
-                  decoration: const InputDecoration(
-                    labelText: 'Roll Number',
-                    border: OutlineInputBorder(),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _rollController,
+                    decoration: const InputDecoration(
+                      labelText: 'Roll Number',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (v) =>
+                    v == null || v.trim().length < 2 ? 'Invalid roll no' : null,
                   ),
-                  validator: (v) =>
-                  v == null || v.trim().length < 2 ? 'Invalid roll no' : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _regdController,
-                  decoration: const InputDecoration(
-                    labelText: 'Registration Number',
-                    border: OutlineInputBorder(),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _regdController,
+                    decoration: const InputDecoration(
+                      labelText: 'Registration Number',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (v) =>
+                    v == null || v.trim().length < 4 ? 'Invalid regd no' : null,
                   ),
-                  validator: (v) =>
-                  v == null || v.trim().length < 4 ? 'Invalid regd no' : null,
-                ),
-                const Spacer(),
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton.icon(
-                    onPressed: _onUpdatePressed,
-                    icon: const Icon(Icons.save),
-                    label: const Text('Update'),
+                  const Spacer(),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton.icon(
+                      onPressed: _onUpdatePressed,
+                      icon: const Icon(Icons.save),
+                      label: const Text('Update'),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

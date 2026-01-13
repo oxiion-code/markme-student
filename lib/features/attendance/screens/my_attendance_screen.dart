@@ -52,225 +52,227 @@ class _MyAttendanceScreenState extends State<MyAttendanceScreen> {
           ),
         ),
       ),
-      body: BlocConsumer<MyAttendanceBloc, MyAttendanceState>(
-        listener: (context, state) {
-          if (state is MyAttendanceLoading) {
-            AppUtils.showCustomLoading(context);
-          } else {
-            AppUtils.hideCustomLoading(context);
-          }
-        },
-        builder: (context, state) {
-          if (state is MyAttendanceLoaded) {
-            final List<SubjectAttendance> subjectWiseAttendance = state.subjectWiseAttendance;
-
-            if (subjectWiseAttendance.isEmpty) {
-              return _buildEmptyState(theme);
+      body: SafeArea( 
+        child: BlocConsumer<MyAttendanceBloc, MyAttendanceState>(
+          listener: (context, state) {
+            if (state is MyAttendanceLoading) {
+              AppUtils.showCustomLoading(context);
+            } else {
+              AppUtils.hideCustomLoading(context);
             }
+          },
+          builder: (context, state) {
+            if (state is MyAttendanceLoaded) {
+              final List<SubjectAttendance> subjectWiseAttendance = state.subjectWiseAttendance;
 
-            // --- Calculate summary ---
-            int theoryPresent = 0, theoryTotal = 0;
-            int practicalPresent = 0, practicalTotal = 0;
-            int overallPresent = 0, overallTotal = 0;
-
-            for (var sub in subjectWiseAttendance) {
-              overallPresent += sub.presentCount;
-              overallTotal += sub.totalSessions;
-
-              if (sub.subjectType.toLowerCase() == "theory") {
-                theoryPresent += sub.presentCount;
-                theoryTotal += sub.totalSessions;
-              } else if (sub.subjectType.toLowerCase() == "practical") {
-                practicalPresent += sub.presentCount;
-                practicalTotal += sub.totalSessions;
+              if (subjectWiseAttendance.isEmpty) {
+                return _buildEmptyState(theme);
               }
-            }
 
-            double overallPercent = overallTotal == 0 ? 0 : (overallPresent / overallTotal) * 100;
-            double theoryPercent = theoryTotal == 0 ? 0 : (theoryPresent / theoryTotal) * 100;
-            double practicalPercent = practicalTotal == 0 ? 0 : (practicalPresent / practicalTotal) * 100;
+              // --- Calculate summary ---
+              int theoryPresent = 0, theoryTotal = 0;
+              int practicalPresent = 0, practicalTotal = 0;
+              int overallPresent = 0, overallTotal = 0;
 
-            return ListView(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-              children: [
-                _AttendanceSummaryCard(
-                  overallPercent: overallPercent,
-                  theoryPercent: theoryPercent,
-                  practicalPercent: practicalPercent,
-                ),
-                const SizedBox(height: 12),
-                ...subjectWiseAttendance.map((subject) {
-                  final double percentage = subject.totalSessions == 0
-                      ? 0
-                      : (subject.presentCount / subject.totalSessions) * 100;
+              for (var sub in subjectWiseAttendance) {
+                overallPresent += sub.presentCount;
+                overallTotal += sub.totalSessions;
 
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Card(
-                      elevation: 3,
-                      color: Colors.white,
-                      shadowColor: Colors.grey.shade200,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: ExpansionTile(
-                        tilePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        title: Text(
-                          subject.subjectName,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blueGrey.shade800,
-                          ),
+                if (sub.subjectType.toLowerCase() == "theory") {
+                  theoryPresent += sub.presentCount;
+                  theoryTotal += sub.totalSessions;
+                } else if (sub.subjectType.toLowerCase() == "practical") {
+                  practicalPresent += sub.presentCount;
+                  practicalTotal += sub.totalSessions;
+                }
+              }
+
+              double overallPercent = overallTotal == 0 ? 0 : (overallPresent / overallTotal) * 100;
+              double theoryPercent = theoryTotal == 0 ? 0 : (theoryPresent / theoryTotal) * 100;
+              double practicalPercent = practicalTotal == 0 ? 0 : (practicalPresent / practicalTotal) * 100;
+
+              return ListView(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                children: [
+                  _AttendanceSummaryCard(
+                    overallPercent: overallPercent,
+                    theoryPercent: theoryPercent,
+                    practicalPercent: practicalPercent,
+                  ),
+                  const SizedBox(height: 12),
+                  ...subjectWiseAttendance.map((subject) {
+                    final double percentage = subject.totalSessions == 0
+                        ? 0
+                        : (subject.presentCount / subject.totalSessions) * 100;
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: Card(
+                        elevation: 3,
+                        color: Colors.white,
+                        shadowColor: Colors.grey.shade200,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        subtitle: Row(
-                          children: [
-                            _AnimatedProgressBar(percentage: percentage),
-                            const SizedBox(width: 8),
-                            Text(
-                              "Present: ${subject.presentCount}/${subject.totalSessions} (${percentage.toStringAsFixed(1)}%)",
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: percentage < 75
-                                    ? Colors.red.shade700
-                                    : Colors.green.shade700,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                        trailing: CircleAvatar(
-                          backgroundColor: percentage < 75
-                              ? Colors.red.shade100
-                              : Colors.green.shade100,
-                          radius: 24,
-                          child: Text(
-                            "${percentage.toStringAsFixed(0)}%",
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: percentage < 75
-                                  ? Colors.red
-                                  : Colors.green.shade800,
+                        child: ExpansionTile(
+                          tilePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          title: Text(
+                            subject.subjectName,
+                            style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
+                              color: Colors.blueGrey.shade800,
                             ),
                           ),
-                        ),
-                        children: [
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          subtitle: Row(
+                            children: [
+                              _AnimatedProgressBar(percentage: percentage),
+                              const SizedBox(width: 8),
+                              Text(
+                                "Present: ${subject.presentCount}/${subject.totalSessions} (${percentage.toStringAsFixed(1)}%)",
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: percentage < 75
+                                      ? Colors.red.shade700
+                                      : Colors.green.shade700,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          trailing: CircleAvatar(
+                            backgroundColor: percentage < 75
+                                ? Colors.red.shade100
+                                : Colors.green.shade100,
+                            radius: 24,
                             child: Text(
-                              "Sessions",
-                              style: theme.textTheme.bodyMedium?.copyWith(
+                              "${percentage.toStringAsFixed(0)}%",
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: percentage < 75
+                                    ? Colors.red
+                                    : Colors.green.shade800,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.grey.shade700,
                               ),
                             ),
                           ),
-                          Divider(thickness: 1.2, color: Colors.grey.shade300),
-                          ...subject.sessions.map((session) {
-                            final isPresent = session.isPresent == "present";
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                              child: ListTile(
-                                leading: Container(
-                                  width: 38,
-                                  height: 38,
-                                  decoration: BoxDecoration(
-                                    color: isPresent
-                                        ? Colors.green.shade100
-                                        : Colors.red.shade100,
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
+                          children: [
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              child: Text(
+                                "Sessions",
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey.shade700,
+                                ),
+                              ),
+                            ),
+                            Divider(thickness: 1.2, color: Colors.grey.shade300),
+                            ...subject.sessions.map((session) {
+                              final isPresent = session.isPresent == "present";
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                child: ListTile(
+                                  leading: Container(
+                                    width: 38,
+                                    height: 38,
+                                    decoration: BoxDecoration(
                                       color: isPresent
-                                          ? Colors.green.shade200
-                                          : Colors.red.shade200,
-                                      width: 2,
+                                          ? Colors.green.shade100
+                                          : Colors.red.shade100,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: isPresent
+                                            ? Colors.green.shade200
+                                            : Colors.red.shade200,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      isPresent ? Icons.check_rounded : Icons.close_rounded,
+                                      color: isPresent
+                                          ? Colors.green.shade600
+                                          : Colors.red.shade600,
+                                      size: 24,
                                     ),
                                   ),
-                                  child: Icon(
-                                    isPresent ? Icons.check_rounded : Icons.close_rounded,
-                                    color: isPresent
-                                        ? Colors.green.shade600
-                                        : Colors.red.shade600,
-                                    size: 24,
+                                  title: Text(
+                                    "Class #${session.srNo}",
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                ),
-                                title: Text(
-                                  "Class #${session.srNo}",
-                                  style: theme.textTheme.bodyLarge?.copyWith(
-                                    fontWeight: FontWeight.w600,
+                                  subtitle: Text(
+                                    _formatDate(session.dateAndTime),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      fontSize: 13,
+                                      color: Colors.grey.shade700,
+                                    ),
                                   ),
-                                ),
-                                subtitle: Text(
-                                  _formatDate(session.dateAndTime),
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    fontSize: 13,
-                                    color: Colors.grey.shade700,
+                                  trailing: _StatusPill(isPresent: isPresent),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
+                                  dense: true,
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 6),
                                 ),
-                                trailing: _StatusPill(isPresent: isPresent),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                dense: true,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 6),
-                              ),
-                            );
-                          }),
-                          const SizedBox(height: 8),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-              ],
-            );
-          }
-
-          if (state is MyAttendanceError) {
-            return Center(
-              child: Text(
-                state.message,
-                style: theme.textTheme.bodyMedium?.copyWith(color: Colors.red),
-              ),
-            );
-          }
-          if(widget.student.sectionId.isEmpty){
-            final deviceHeight = MediaQuery.of(context).size.height;
-            return SizedBox(
-              height: deviceHeight * 0.5,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.verified_outlined,
-                        size: 80, color: Colors.orange),
-                    const SizedBox(height: 24),
-                    const Text(
-                      "Data Not Verified Yet",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
-                      child: Text(
-                        "Your data is not verified yet and section is not allotted. Please contact your administrator.",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                          height: 1.4,
+                              );
+                            }),
+                            const SizedBox(height: 8),
+                          ],
                         ),
-                        textAlign: TextAlign.center,
                       ),
-                    ),
-                  ],
+                    );
+                  }),
+                ],
+              );
+            }
+
+            if (state is MyAttendanceError) {
+              return Center(
+                child: Text(
+                  state.message,
+                  style: theme.textTheme.bodyMedium?.copyWith(color: Colors.red),
                 ),
-              ),
-            );
-          }
-          return const Center(child: Text(""));
-        },
+              );
+            }
+            if(widget.student.sectionId.isEmpty){
+              final deviceHeight = MediaQuery.of(context).size.height;
+              return SizedBox(
+                height: deviceHeight * 0.5,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.verified_outlined,
+                          size: 80, color: Colors.orange),
+                      const SizedBox(height: 24),
+                      const Text(
+                        "Data Not Verified Yet",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        child: Text(
+                          "Your data is not verified yet and section is not allotted. Please contact your administrator.",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
+                            height: 1.4,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+            return const Center(child: Text(""));
+          },
+        ),
       ),
     );
   }
