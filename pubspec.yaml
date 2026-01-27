@@ -3,7 +3,7 @@ description: "Student attendance app"
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-version: 1.0.4+5
+version: 1.0.5+6
 
 environment:
   sdk: ^3.8.0
@@ -44,6 +44,7 @@ dependencies:
   build_runner: ^2.4.13
   shimmer: ^3.0.0
   file_picker: ^10.3.8
+  upgrader: ^12.5.0
 
 dev_dependencies:
   flutter_test:

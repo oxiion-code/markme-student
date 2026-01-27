@@ -41,8 +41,8 @@ class _AuthPhoneNumberScreenState extends State<AuthPhoneNumberScreen> {
             AppUtils.showCustomLoading(context);
           }
           if (state is OtpSent) {
-            context.pop();
             final phoneNumber=phoneController.text.trim();
+            context.pop();
             final authInfo=AuthInfo(uid: state.verificationId, phoneNumber:phoneNumber, isNewUser: false,collegeDetail: widget.collegeDetail);
             context.push('/authOtp', extra: authInfo);
           } else if (state is AuthError) {

@@ -7,12 +7,25 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1095035286846:android:d4e62ddd6ba2becb83286f",
+        "mobilesdk_app_id": "1:1095035286846:android:b286172569647b1183286f",
         "android_client_info": {
-          "package_name": "com.oxiionglobal.markme.student"
+          "package_name": "com.oxiionglobal.markme.admin"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1095035286846-d4al8vbn5dhf2kapk9dm85j6itseapar.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oxiionglobal.markme.admin",
+            "certificate_hash": "c6a351deeb922be26fbe0757bea3bb2efb134494"
+          }
+        },
+        {
+          "client_id": "1095035286846-kssftb2ir0vq1m80eebfg7h6408os4rg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBTdwkEeVjIUANb7vngTy2Mxckf-mYHuKs"
@@ -20,7 +33,123 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1095035286846-kssftb2ir0vq1m80eebfg7h6408os4rg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1095035286846-44t52ocecvhhd598gpch8f7o9veftnjj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.oxiionglobal.markme.admin"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1095035286846:android:d4e62ddd6ba2becb83286f",
+        "android_client_info": {
+          "package_name": "com.oxiionglobal.markme.student"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1095035286846-70j9n2pdulpek41dn6abkq1c5icuh7p0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oxiionglobal.markme.student",
+            "certificate_hash": "cf8315f28adb8b11ce807fa4b1acc3e4c7a25d97"
+          }
+        },
+        {
+          "client_id": "1095035286846-f6a6qv6dl4rsqpe7ir2ic91pe52b67oj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oxiionglobal.markme.student",
+            "certificate_hash": "322f18d0df002cbb990059db87d08ee64df45c84"
+          }
+        },
+        {
+          "client_id": "1095035286846-kssftb2ir0vq1m80eebfg7h6408os4rg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTdwkEeVjIUANb7vngTy2Mxckf-mYHuKs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1095035286846-kssftb2ir0vq1m80eebfg7h6408os4rg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1095035286846-44t52ocecvhhd598gpch8f7o9veftnjj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.oxiionglobal.markme.admin"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1095035286846:android:c496387535cab72e83286f",
+        "android_client_info": {
+          "package_name": "com.oxiionglobal.markme.teacher"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1095035286846-ko4u43g416j2cqpqpr2rpn61o1tri3dd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oxiionglobal.markme.teacher",
+            "certificate_hash": "20e280fb47ba08c23791c905b3fcaf6715966b14"
+          }
+        },
+        {
+          "client_id": "1095035286846-uma7gu2q8m2807vruo9lnd9dke6g6t41.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oxiionglobal.markme.teacher",
+            "certificate_hash": "0e64827759a30933a225560ef591afc1dfc9bd2b"
+          }
+        },
+        {
+          "client_id": "1095035286846-kssftb2ir0vq1m80eebfg7h6408os4rg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTdwkEeVjIUANb7vngTy2Mxckf-mYHuKs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1095035286846-kssftb2ir0vq1m80eebfg7h6408os4rg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1095035286846-44t52ocecvhhd598gpch8f7o9veftnjj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.oxiionglobal.markme.admin"
+              }
+            }
+          ]
         }
       }
     }

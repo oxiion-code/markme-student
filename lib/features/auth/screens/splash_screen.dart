@@ -10,9 +10,58 @@ import '../../student/models/student_cubit.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
+import 'package:upgrader/upgrader.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen>  {
+  Future<void> _checkForUpdate(BuildContext context)async{
+    final upgrade = Upgrader(
+      debugLogging: true,
+    );
+    await upgrade.initialize();
+    final shouldUpdate=upgrade.isUpdateAvailable();
+    if(shouldUpdate && context.mounted){
+      _showForceUpdateDialog(context, upgrade);
+    }
+  }
+  void _showForceUpdateDialog(BuildContext context, Upgrader upgrader) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // 🔥 cannot close
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false, // 🔥 back button disabled
+        child: AlertDialog(
+          title: const Text("Update Required"),
+          content: const Text(
+              "A new version of MarkBook is available. Please update the app to continue."
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                upgrader.sendUserToAppStore();
+              },
+              child: const Text("Update"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkForUpdate(context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
